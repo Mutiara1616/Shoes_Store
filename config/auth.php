@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'skincare' => [
+            'driver' => 'session',
+            'provider' => 'skincare_members',
+        ],
     ],
 
     /*
@@ -63,6 +68,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => env('AUTH_MODEL', App\Models\User::class),
+        ],
+
+        'skincare_members' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\SkincareMember::class,
         ],
 
         // 'users' => [
