@@ -5,16 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Skincare Shop</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
-    <div class="flex min-h-screen">
-        <div class="w-full md:w-1/2 flex items-center justify-center p-8">
+    <div class="flex h-screen">
+        <div class="w-full md:w-1/2 flex items-center justify-center p-4">
             <div class="w-full max-w-md">
-                <div class="text-center mb-10">
+                <div class="text-center mb-6">
                     <h1 class="text-2xl font-bold text-gray-700">Skincare Shop</h1>
                 </div>
                 
-                <div class="flex border-b border-gray-300 mb-6">
+                <div class="flex border-b border-gray-300 mb-4">
                     <a href="{{ route('skincare.login') }}" class="px-4 py-2 text-sm font-medium text-teal-600 border-b-2 border-teal-600">Login</a>
                     <a href="{{ route('skincare.register') }}" class="px-4 py-2 text-sm font-medium text-gray-500">Sign up</a>
                 </div>
@@ -27,7 +33,7 @@
                 
                 <form method="POST" action="{{ route('skincare.login.submit') }}">
                     @csrf
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <div class="relative">
                             <input type="email" name="email" id="email" placeholder="Email or phone number" 
                                 class="w-full px-4 py-2 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 pl-10" 
@@ -43,7 +49,7 @@
                         @enderror
                     </div>
                     
-                    <div class="mb-4">
+                    <div class="mb-3">
                         <div class="relative">
                             <input type="password" name="password" id="password" placeholder="Password" 
                                 class="w-full px-4 py-2 border rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 pl-10" required>
@@ -58,7 +64,7 @@
                         @enderror
                     </div>
                     
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center justify-between mb-4">
                         <a href="{{ route('skincare.password.request') }}" class="text-sm text-gray-500 hover:text-teal-600">Forgot your password?</a>
                     </div>
                     
@@ -69,10 +75,10 @@
             </div>
         </div>
         
-        <div class="hidden md:block md:w-1/2 bg-teal-100 relative">
-            <div class="absolute inset-0 flex items-center justify-center">
-                <div class="p-12">
-                    <img src="{{ asset('images/skincare.jpg') }}" alt="Illustration" class="max-w-full h-auto">
+        <div class="hidden md:block md:w-1/2 bg-teal-100">
+            <div class="h-full flex items-center justify-center">
+                <div class="p-8">
+                    <img src="{{ asset('images/skincare.jpg') }}" alt="Illustration" class="max-h-screen object-contain">
                 </div>
             </div>
         </div>
