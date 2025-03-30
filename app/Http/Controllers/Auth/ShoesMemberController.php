@@ -3,16 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\SkincareMember;
+use App\Models\ShoesMember;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class SkincareMemberController extends Controller
+class ShoesMemberController extends Controller
 {
     public function showLoginForm()
     {
-        return view('auth.skincare-login');
+        return view('auth.shoes-login');
     }
 
     public function login(Request $request)
@@ -22,7 +22,7 @@ class SkincareMemberController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::guard('skincare')->attempt($credentials)) {
+        if (Auth::guard('shoes')->attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('/dashboard');
         }
@@ -34,22 +34,20 @@ class SkincareMemberController extends Controller
 
     public function showRegisterForm()
     {
-        return view('auth.skincare-register');
+        return view('auth.shoes-register');
     }
 
     public function register(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:skincare_members',
+            'email' => 'required|string|email|max:255|unique:shoes_members',
             'password' => 'required|string|min:8|confirmed',
-            'phone_number' => 'nullable|string',
         ]);
 
-        SkincareMember::create([
+        ShoesMember::create([
             'name' => $request->name,
             'email' => $request->email,
-            'phone_number' => $request->phone_number,
             'password' => Hash::make($request->password),
         ]);
 
@@ -58,7 +56,7 @@ class SkincareMemberController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('skincare')->logout();
+        Auth::guard('shoes')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('/');

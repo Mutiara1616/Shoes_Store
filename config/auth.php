@@ -41,9 +41,9 @@ return [
             'provider' => 'users',
         ],
 
-        'skincare' => [
+        'shoes' => [
             'driver' => 'session',
-            'provider' => 'skincare_members',
+            'provider' => 'shoes_members',
         ],
     ],
 
@@ -70,15 +70,10 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
-        'skincare_members' => [
+        'shoes_members' => [
             'driver' => 'eloquent',
-            'model' => App\Models\SkincareMember::class,
+            'model' => App\Models\ShoesMember::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
     ],
 
     /*

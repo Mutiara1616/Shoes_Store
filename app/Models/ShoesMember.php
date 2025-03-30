@@ -6,14 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class SkincareMember extends Authenticatable
+class ShoesMember extends Authenticatable
 {
     use HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
         'email',
-        'phone_number',
         'password',
     ];
 
