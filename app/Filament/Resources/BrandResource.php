@@ -40,13 +40,7 @@ class BrandResource extends Resource
                         Forms\Components\Textarea::make('description')
                             ->maxLength(65535)
                             ->columnSpanFull(),
-                        
-                        Forms\Components\FileUpload::make('logo')
-                            ->image()
-                            ->directory('brands')
-                            ->maxSize(1024)
-                            ->columnSpanFull(),
-                        
+                                            
                         Forms\Components\Toggle::make('is_active')
                             ->required()
                             ->default(true),
@@ -59,9 +53,6 @@ class BrandResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('logo')
-                    ->circular(),
-                
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
                     ->sortable(),

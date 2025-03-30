@@ -70,10 +70,15 @@
                         <a href="{{ route('products.show', $product->slug) }}">
                             <div class="relative h-64">
                                 @php
-                                    $images = json_decode($product->images);
+                                    $images = is_array($product->images) ? $product->images : json_decode($product->images, true);
                                     $image = !empty($images) && is_array($images) ? $images[0] : 'https://via.placeholder.com/300';
+                                    
+                                    // If it's a storage path, use asset helper
+                                    if(is_string($image) && !filter_var($image, FILTER_VALIDATE_URL) && !str_starts_with($image, 'http')) {
+                                        $image = asset('storage/' . $image);
+                                    }
                                 @endphp
-                                <img src="{{ asset('storage/' . $image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                <img src="{{ $image }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
                                 @if($product->sale_price && $product->sale_price < $product->price)
                                 <div class="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1 m-2 rounded">
                                     SALE
