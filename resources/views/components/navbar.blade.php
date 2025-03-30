@@ -7,11 +7,11 @@
                     <a href="{{ route('home') }}" class="text-2xl font-bold text-blue-600">STEP UP</a>
                 </div>
                 <div class="hidden md:ml-10 md:flex md:space-x-8">
-                    <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Home</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Men</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Women</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Kids</a>
-                    <a href="#" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium">Sale</a>
+                    <a href="{{ route('home') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium {{ request()->routeIs('home') ? 'text-blue-600 border-b-2 border-blue-600' : '' }}">Home</a>
+                    <a href="{{ route('category.men') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium {{ request()->routeIs('category.men') ? 'text-blue-600 border-b-2 border-blue-600' : '' }}">Men</a>
+                    <a href="{{ route('category.women') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium {{ request()->routeIs('category.women') ? 'text-blue-600 border-b-2 border-blue-600' : '' }}">Women</a>
+                    <a href="{{ route('category.kids') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium {{ request()->routeIs('category.kids') ? 'text-blue-600 border-b-2 border-blue-600' : '' }}">Kids</a>
+                    <a href="{{ route('products.sale') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium {{ request()->routeIs('products.sale') ? 'text-blue-600 border-b-2 border-blue-600' : '' }}">Sale</a>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
@@ -50,11 +50,11 @@
     <!-- Mobile menu -->
     <div x-show="mobileMenuOpen" @click.away="mobileMenuOpen = false" class="md:hidden bg-white shadow-lg">
         <div class="px-2 pt-2 pb-3 space-y-1">
-            <a href="{{ route('home') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">Home</a>
-            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">Men</a>
-            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">Women</a>
-            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">Kids</a>
-            <a href="#" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100">Sale</a>
+            <a href="{{ route('home') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('home') ? 'text-blue-600' : '' }}">Home</a>
+            <a href="{{ route('category.men') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('category.men') ? 'text-blue-600' : '' }}">Men</a>
+            <a href="{{ route('category.women') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('category.women') ? 'text-blue-600' : '' }}">Women</a>
+            <a href="{{ route('category.kids') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('category.kids') ? 'text-blue-600' : '' }}">Kids</a>
+            <a href="{{ route('products.sale') }}" class="block px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 {{ request()->routeIs('products.sale') ? 'text-blue-600' : '' }}">Sale</a>
         </div>
     </div>
 </nav>
