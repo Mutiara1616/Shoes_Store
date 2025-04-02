@@ -18,9 +18,26 @@
                 <a href="#" class="text-gray-700 hover:text-blue-600">
                     <i class="fas fa-search text-xl"></i>
                 </a>
-                <a href="#" class="text-gray-700 hover:text-blue-600">
+                
+                <a href="{{ route('cart.index') }}" class="text-gray-700 hover:text-blue-600 relative">
                     <i class="fas fa-shopping-bag text-xl"></i>
+                    @php
+                        $cart = App\Models\Cart::where('session_id', session()->get('cart_session_id'))
+                            ->orWhere(function($query) {
+                                if(Auth::guard('shoes')->check()) {
+                                    $query->where('shoes_member_id', Auth::guard('shoes')->id());
+                                }
+                            })
+                            ->first();
+                        $cartCount = $cart ? $cart->items->count() : 0;
+                    @endphp
+                    @if($cartCount > 0)
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                        {{ $cartCount }}
+                    </span>
+                    @endif
                 </a>
+                
                 @if(Auth::guard('shoes')->check())
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" type="button" class="text-gray-700 hover:text-blue-600 focus:outline-none">

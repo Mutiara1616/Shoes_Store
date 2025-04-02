@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\ShoesMemberController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 
 // Home/Landing Page
 Route::get('/', function () {
@@ -37,3 +39,26 @@ Route::get('/men', [ProductController::class, 'category'])->name('category.men')
 Route::get('/women', [ProductController::class, 'category'])->name('category.women')->defaults('slug', 'women');
 Route::get('/kids', [ProductController::class, 'category'])->name('category.kids')->defaults('slug', 'kids');
 Route::get('/sale', [ProductController::class, 'sale'])->name('products.sale');
+
+// Cart routes
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [CartController::class, 'index'])->name('index');
+    Route::post('/add', [CartController::class, 'add'])->name('add');
+    Route::patch('/update/{cartItem}', [CartController::class, 'update'])->name('update');
+    Route::delete('/remove/{cartItem}', [CartController::class, 'remove'])->name('remove');
+    Route::delete('/clear', [CartController::class, 'clear'])->name('clear');
+});
+
+// Checkout routes
+Route::prefix('checkout')->name('checkout.')->group(function () {
+    Route::get('/', [CheckoutController::class, 'index'])->name('index');
+    Route::post('/process', [CheckoutController::class, 'process'])->name('process');
+    Route::get('/success/{order}', [CheckoutController::class, 'success'])->name('success');
+});
+
+// Brand routes
+Route::get('/brand/{slug}', [ProductController::class, 'brand'])->name('brand.show');
+
+// New arrivals and featured products
+Route::get('/new-arrivals', [ProductController::class, 'newest'])->name('products.newest');
+Route::get('/featured', [ProductController::class, 'featured'])->name('products.featured');

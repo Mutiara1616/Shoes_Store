@@ -1,4 +1,5 @@
 <?php
+// app/Models/ShoesMember.php
 
 namespace App\Models;
 
@@ -20,4 +21,14 @@ class ShoesMember extends Authenticatable
         'password',
         'remember_token',
     ];
+    
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+    
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
+    }
 }

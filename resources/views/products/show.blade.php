@@ -88,7 +88,9 @@
                         <div class="grid grid-cols-4 gap-2">
                             @if(is_array($product->sizes) || is_object($product->sizes))
                                 @foreach($product->sizes as $size)
-                                <button class="border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button type="button" 
+                                        class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
+                                        data-size="{{ $size }}">
                                     {{ $size }}
                                 </button>
                                 @endforeach
@@ -101,8 +103,10 @@
                         <div class="flex space-x-3">
                             @if(is_array($product->colors) || is_object($product->colors))
                                 @foreach($product->colors as $color)
-                                <button class="border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" 
-                                        style="background-color: {{ $color }};">
+                                <button type="button" 
+                                        class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
+                                        style="background-color: {{ $color }};"
+                                        data-color="{{ $color }}">
                                 </button>
                                 @endforeach
                             @endif
@@ -110,26 +114,33 @@
                     </div>
                 </div>
                 
-                <div class="flex items-center space-x-4">
+                <form action="{{ route('cart.add') }}" method="POST" class="flex items-center space-x-4">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    
                     <div class="flex border border-gray-300 rounded-md">
-                        <button class="px-3 py-2 text-gray-600 hover:bg-gray-100">
+                        <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
                             <i class="fas fa-minus"></i>
                         </button>
-                        <input type="text" value="1" class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none">
-                        <button class="px-3 py-2 text-gray-600 hover:bg-gray-100">
+                        <input type="number" name="quantity" value="1" min="1" 
+                            class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
+                        <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
                     
-                    <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
+                    <input type="hidden" name="size" id="selected_size">
+                    <input type="hidden" name="color" id="selected_color">
+                    
+                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
                         <i class="fas fa-shopping-cart mr-2"></i>
                         Add to Cart
                     </button>
                     
-                    <button class="p-3 border border-gray-300 rounded-md hover:bg-gray-50">
+                    <button type="button" class="p-3 border border-gray-300 rounded-md hover:bg-gray-50">
                         <i class="far fa-heart text-gray-600"></i>
                     </button>
-                </div>
+                </form>
                 
                 <div class="pt-4">
                     <p class="text-green-600 flex items-center">
@@ -198,4 +209,59 @@
         @endif
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Size selection
+        const sizeButtons = document.querySelectorAll('.size-button');
+        sizeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all size buttons
+                sizeButtons.forEach(btn => {
+                    btn.classList.remove('ring-2', 'ring-blue-500');
+                    btn.classList.add('hover:bg-gray-50');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('ring-2', 'ring-blue-500');
+                this.classList.remove('hover:bg-gray-50');
+                
+                // Update hidden input
+                document.getElementById('selected_size').value = this.getAttribute('data-size');
+            });
+        });
+        
+        // Color selection
+        const colorButtons = document.querySelectorAll('.color-button');
+        colorButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active class from all color buttons
+                colorButtons.forEach(btn => {
+                    btn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-500');
+                });
+                
+                // Add active class to clicked button
+                this.classList.add('ring-2', 'ring-offset-2', 'ring-blue-500');
+                
+                // Update hidden input
+                document.getElementById('selected_color').value = this.getAttribute('data-color');
+            });
+        });
+        
+        // Quantity buttons
+        const decreaseButton = document.querySelector('.quantity-decrease');
+        const increaseButton = document.querySelector('.quantity-increase');
+        const quantityInput = document.querySelector('.quantity-input');
+        
+        decreaseButton.addEventListener('click', function() {
+            if (parseInt(quantityInput.value) > 1) {
+                quantityInput.value = parseInt(quantityInput.value) - 1;
+            }
+        });
+        
+        increaseButton.addEventListener('click', function() {
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+        });
+    });
+</script>
 @endsection
