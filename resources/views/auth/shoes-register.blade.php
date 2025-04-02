@@ -31,20 +31,15 @@
         .sign-up-btn:hover {
             background-color: #333;
         }
-        
-        .image-side {
-            background-image: url('https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1112&q=80');
-            background-size: cover;
-            background-position: center;
-        }
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex items-center justify-center p-4">
+        <!-- Menggunakan ukuran fixed dan max-width yang sama dengan login -->
         <div class="max-w-6xl w-full bg-white rounded-xl overflow-hidden shadow-xl flex">
-            <!-- Left side: register form -->
-            <div class="w-full md:w-1/2 p-10 md:p-16">
-                <div class="mb-10">
+            <!-- Form side -->
+            <div class="w-full md:w-1/2 p-10">
+                <div class="mb-6">
                     <div class="flex items-center">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M19.2 5H4.8C3.81 5 3 5.81 3 6.8V17.2C3 18.19 3.81 19 4.8 19H19.2C20.19 19 21 18.19 21 17.2V6.8C21 5.81 20.19 5 19.2 5Z" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -53,16 +48,28 @@
                         <span class="ml-2 font-semibold">STEP UP</span>
                     </div>
                 </div>
+
+                <!-- Notifikasi error -->
+                @if($errors->any())
+                <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+                    <div class="flex">
+                        <svg class="h-5 w-5 text-red-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>Terdapat kesalahan pada proses registrasi. Silakan periksa formulir Anda.</span>
+                    </div>
+                </div>
+                @endif
                 
-                <div class="mb-8">
+                <div class="mb-5">
                     <h1 class="text-2xl font-semibold text-gray-900">Create your account</h1>
-                    <p class="mt-2 text-gray-600">Please fill in your information</p>
+                    <p class="mt-1 text-gray-600">Please fill in your information</p>
                 </div>
                 
                 <form method="POST" action="{{ route('shoes.register.submit') }}">
                     @csrf
                     
-                    <div class="mb-5">
+                    <div class="mb-3">
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Name<span class="text-gray-400">*</span></label>
                         <input type="text" name="name" id="name" 
                                class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" 
@@ -72,7 +79,7 @@
                         @enderror
                     </div>
                     
-                    <div class="mb-5">
+                    <div class="mb-3">
                         <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email<span class="text-gray-400">*</span></label>
                         <input type="email" name="email" id="email" 
                                class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" 
@@ -82,7 +89,7 @@
                         @enderror
                     </div>
                     
-                    <div class="mb-5">
+                    <div class="mb-3">
                         <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password<span class="text-gray-400">*</span></label>
                         <input type="password" name="password" id="password" 
                                class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" 
@@ -92,29 +99,31 @@
                         @enderror
                     </div>
                     
-                    <div class="mb-6">
+                    <div class="mb-4">
                         <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password<span class="text-gray-400">*</span></label>
                         <input type="password" name="password_confirmation" id="password_confirmation" 
                                class="input-field w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none" 
                                placeholder="Confirm your password" required>
                     </div>
                     
-                    <div>
+                    <div class="mt-5">
                         <button type="submit" class="sign-up-btn w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                             Sign Up
                         </button>
                     </div>
                 </form>
                 
-                <div class="mt-6 text-center">
+                <div class="mt-5 text-center">
                     <p class="text-sm text-gray-600">
                         Already have an account? <a href="{{ route('shoes.login') }}" class="text-gray-900 font-medium">Log in</a>
                     </p>
                 </div>
             </div>
             
-            <!-- Right side: Static image with content -->
-            <div class="hidden md:block md:w-1/2 relative image-side">
+            <!-- Right side: Image - Menggunakan rasio yang sama -->
+            <div class="hidden md:block md:w-1/2 relative">
+                <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1112&q=80" 
+                     alt="Shoes" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-black bg-opacity-20 flex flex-col justify-end p-10">
                     <h2 class="text-3xl font-bold text-white mb-2">Discovering the Best Footwear for Your Style</h2>
                     <p class="text-white text-opacity-80 mb-8">
