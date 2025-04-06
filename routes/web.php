@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\ShoesMemberController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\HomeController;
 
 // Home/Landing Page
 Route::get('/', function () {
@@ -73,3 +74,6 @@ Route::middleware('auth:shoes')->group(function () {
     Route::delete('/wishlist/{wishlistItem}', [WishlistController::class, 'remove'])->name('wishlist.remove');
     Route::post('/wishlist/{wishlistItem}/cart', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
 });
+
+// new arrival homepagae
+Route::get('/', [HomeController::class, 'index'])->name('home');
