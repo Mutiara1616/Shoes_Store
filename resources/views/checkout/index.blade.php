@@ -1,4 +1,4 @@
-<!-- resources/views/checkout/index -->
+<!-- resources/views/checkout/index.blade.php -->
 @extends('layouts.app')
 
 @section('title', 'Checkout - STEP UP')
