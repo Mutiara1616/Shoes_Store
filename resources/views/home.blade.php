@@ -206,8 +206,8 @@
         <p class="text-blue-100 mb-8 max-w-2xl mx-auto">Stay updated with the latest styles, releases, and exclusive offers.</p>
         
         <form class="max-w-md mx-auto flex">
-            <input type="email" placeholder="Your email address" class="flex-grow px-4 py-3 rounded-l-lg focus:outline-none">
-            <button type="submit" class="bg-white text-blue-600 px-6 py-3 rounded-r-lg font-medium hover:bg-gray-100 transition-colors duration-300">Subscribe</button>
+            <input type="email" placeholder="Your email address" class="flex-grow px-6 py-3 rounded-l-3xl focus:outline-none">
+            <button type="submit" class="bg-white text-blue-600 px-6 py-3 rounded-r-3xl font-medium hover:bg-gray-100 transition-colors duration-300">Subscribe</button>
         </form>
     </div>
 </section>
