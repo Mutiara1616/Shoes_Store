@@ -35,7 +35,10 @@ Route::get('/products', [ProductController::class, 'index'])->name('products.ind
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
 // Category routes
-Route::get('/men', [ProductController::class, 'category'])->name('category.men')->defaults('slug', 'men');
+Route::get('/category/men', function () {
+    return view('products.men');
+})->name('category.men');
+
 Route::get('/women', [ProductController::class, 'category'])->name('category.women')->defaults('slug', 'women');
 Route::get('/kids', [ProductController::class, 'category'])->name('category.kids')->defaults('slug', 'kids');
 Route::get('/sale', [ProductController::class, 'sale'])->name('products.sale');
