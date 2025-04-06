@@ -1,4 +1,4 @@
-<!-- resources/views/auth/shoes-login.blade.php -->
+<!-- resources/views/auth/shoes-login -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
