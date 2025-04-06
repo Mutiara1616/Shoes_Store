@@ -1,5 +1,4 @@
 <?php
-// app/Models/ShoesMember.php
 
 namespace App\Models;
 
@@ -30,5 +29,15 @@ class ShoesMember extends Authenticatable
     public function cart()
     {
         return $this->hasOne(Cart::class);
+    }
+
+    public function wishlistItems()
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    public function wishlistProducts()
+    {
+        return $this->belongsToMany(Product::class, 'wishlist_items');
     }
 }

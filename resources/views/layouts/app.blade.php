@@ -20,7 +20,7 @@
 <body class="bg-gray-50" x-data="{ mobileMenuOpen: false }">
     <!-- Reusable Navbar Component -->
     <x-navbar />
-    
+
     <main>
         @yield('content')
     </main>
@@ -30,4 +30,4 @@
 
     @yield('scripts')
 </body>
-</html> 
+</html>

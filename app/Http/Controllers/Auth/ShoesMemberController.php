@@ -61,4 +61,26 @@ class ShoesMemberController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::guard('shoes')->user();
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:shoes_members,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+        ]);
+        
+        // Remove password from array if it's empty
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        } else {
+            $validated['password'] = Hash::make($validated['password']);
+        }
+        
+        $user->update($validated);
+        
+        return redirect()->route('dashboard')->with('success', 'Profile updated successfully');
+    }
 }

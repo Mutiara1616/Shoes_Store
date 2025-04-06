@@ -5,6 +5,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Auth\ShoesMemberController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\WishlistController;
 
 // Home/Landing Page
 Route::get('/', function () {
@@ -28,6 +29,8 @@ Route::middleware('auth:shoes')->group(function () {
     Route::get('/dashboard', function() {
         return view('dashboard');
     })->name('dashboard');
+
+    Route::put('/profile/update', [App\Http\Controllers\Auth\ShoesMemberController::class, 'updateProfile'])->name('shoes.profile.update');
 });
 
 // Product routes
@@ -62,3 +65,10 @@ Route::get('/brand/{slug}', [ProductController::class, 'brand'])->name('brand.sh
 // New arrivals and featured products
 Route::get('/new-arrivals', [ProductController::class, 'newest'])->name('products.newest');
 Route::get('/featured', [ProductController::class, 'featured'])->name('products.featured');
+
+// Wishlist routes
+Route::middleware('auth:shoes')->group(function () {
+    Route::post('/wishlist/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::delete('/wishlist/{wishlistItem}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::post('/wishlist/{wishlistItem}/cart', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');
+});
