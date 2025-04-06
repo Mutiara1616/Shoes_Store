@@ -121,7 +121,7 @@
                     <i class="fas fa-user-circle mr-2"></i>
                     Go to Dashboard
                 </a>
-                <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                <a href="{{ route('home') }}" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                     <i class="fas fa-shopping-bag mr-2"></i>
                     Continue Shopping
                 </a>
