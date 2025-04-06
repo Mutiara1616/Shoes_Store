@@ -24,12 +24,10 @@ class ShoesMemberController extends Controller
 
         if (Auth::guard('shoes')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/');
         }
 
-        return back()->withErrors([
-            'email' => 'Kredensial yang diberikan tidak cocok dengan data kami.',
-        ]);
+        return back()->with('error', 'Email atau password salah. Silakan coba lagi.');
     }
 
     public function showRegisterForm()
