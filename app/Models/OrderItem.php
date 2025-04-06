@@ -22,4 +22,10 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
+    
+    // Add subtotal accessor
+    public function getSubtotalAttribute()
+    {
+        return $this->price * $this->quantity;
+    }
 }

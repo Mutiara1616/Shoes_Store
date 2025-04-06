@@ -44,12 +44,25 @@ class CartController extends Controller
     
     public function add(Request $request)
     {
-        $request->validate([
+        $product = Product::findOrFail($request->product_id);
+        
+        // Check if product has sizes and colors and validate accordingly
+        $rules = [
             'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
-            'size' => 'nullable|string',
-            'color' => 'nullable|string',
-        ]);
+        ];
+        
+        // Only require size if the product has sizes
+        if (is_array($product->sizes) && count($product->sizes) > 0) {
+            $rules['size'] = 'required|string';
+        }
+        
+        // Only require color if the product has colors
+        if (is_array($product->colors) && count($product->colors) > 0) {
+            $rules['color'] = 'required|string';
+        }
+        
+        $request->validate($rules);
         
         $cart = $this->getOrCreateCart();
         

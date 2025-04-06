@@ -68,6 +68,7 @@ Route::get('/featured', [ProductController::class, 'featured'])->name('products.
 
 // Wishlist routes
 Route::middleware('auth:shoes')->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
     Route::delete('/wishlist/{wishlistItem}', [WishlistController::class, 'remove'])->name('wishlist.remove');
     Route::post('/wishlist/{wishlistItem}/cart', [WishlistController::class, 'moveToCart'])->name('wishlist.moveToCart');

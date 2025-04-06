@@ -33,11 +33,11 @@ class ShoesMember extends Authenticatable
 
     public function wishlistItems()
     {
-        return $this->hasMany(WishlistItem::class);
+        return $this->hasMany(WishlistItem::class, 'shoes_member_id');
     }
 
-    public function wishlistProducts()
+    public function hasInWishlist($productId)
     {
-        return $this->belongsToMany(Product::class, 'wishlist_items');
+        return $this->wishlistItems()->where('product_id', $productId)->exists();
     }
 }
