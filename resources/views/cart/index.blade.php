@@ -12,7 +12,7 @@
                 <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
                 <h2 class="text-2xl font-medium text-gray-600 mb-2">Your cart is empty</h2>
                 <p class="text-gray-500 mb-6">Looks like you haven't added any items to your cart yet.</p>
-                <a href="{{ route('products.index') }}" class="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors">
+                <a href="{{ route('home') }}" class="bg-blue-600 text-white px-6 py-3 rounded-md font-medium hover:bg-blue-700 transition-colors">
                     Browse Products
                 </a>
             </div>
