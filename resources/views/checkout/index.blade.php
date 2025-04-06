@@ -173,34 +173,38 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="border border-gray-300 rounded-md p-4 cursor-pointer bg-blue-50 border-blue-500">
-                                    <input type="radio" id="credit_card" name="payment_method" value="credit_card" checked class="hidden">
+                                <div class="border border-gray-300 rounded-md p-4 cursor-pointer" id="cc_option">
+                                    <input type="radio" id="credit_card" name="payment_method" value="credit_card" class="hidden payment-radio" checked>
                                     <label for="credit_card" class="flex items-center cursor-pointer">
-                                        <div class="bg-white rounded-full h-5 w-5 border border-blue-500 flex items-center justify-center mr-2">
-                                            <div class="bg-blue-500 rounded-full h-3 w-3"></div>
+                                        <div class="payment-radio-btn bg-white rounded-full h-5 w-5 border border-gray-300 flex items-center justify-center mr-2">
+                                            <div class="payment-radio-selected bg-blue-500 rounded-full h-3 w-3 hidden"></div>
                                         </div>
                                         <span class="flex items-center">
-                                            <i class="far fa-credit-card mr-2 text-blue-500"></i>
+                                            <i class="far fa-credit-card mr-2 text-gray-600"></i>
                                             Credit Card
                                         </span>
                                     </label>
                                 </div>
-                                <div class="border border-gray-300 rounded-md p-4 cursor-pointer opacity-50">
-                                    <input type="radio" id="paypal" name="payment_method" value="paypal" disabled class="hidden">
-                                    <label for="paypal" class="flex items-center cursor-not-allowed">
-                                        <div class="bg-white rounded-full h-5 w-5 border border-gray-300 flex items-center justify-center mr-2"></div>
+                                <div class="border border-gray-300 rounded-md p-4 cursor-pointer" id="paypal_option">
+                                    <input type="radio" id="paypal" name="payment_method" value="paypal" class="hidden payment-radio">
+                                    <label for="paypal" class="flex items-center cursor-pointer">
+                                        <div class="payment-radio-btn bg-white rounded-full h-5 w-5 border border-gray-300 flex items-center justify-center mr-2">
+                                            <div class="payment-radio-selected bg-blue-500 rounded-full h-3 w-3 hidden"></div>
+                                        </div>
                                         <span class="flex items-center">
-                                            <i class="fab fa-paypal mr-2"></i>
+                                            <i class="fab fa-paypal mr-2 text-gray-600"></i>
                                             PayPal
                                         </span>
                                     </label>
                                 </div>
-                                <div class="border border-gray-300 rounded-md p-4 cursor-pointer opacity-50">
-                                    <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer" disabled class="hidden">
-                                    <label for="bank_transfer" class="flex items-center cursor-not-allowed">
-                                        <div class="bg-white rounded-full h-5 w-5 border border-gray-300 flex items-center justify-center mr-2"></div>
+                                <div class="border border-gray-300 rounded-md p-4 cursor-pointer" id="bank_option">
+                                    <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer" class="hidden payment-radio">
+                                    <label for="bank_transfer" class="flex items-center cursor-pointer">
+                                        <div class="payment-radio-btn bg-white rounded-full h-5 w-5 border border-gray-300 flex items-center justify-center mr-2">
+                                            <div class="payment-radio-selected bg-blue-500 rounded-full h-3 w-3 hidden"></div>
+                                        </div>
                                         <span class="flex items-center">
-                                            <i class="fas fa-university mr-2"></i>
+                                            <i class="fas fa-university mr-2 text-gray-600"></i>
                                             Bank Transfer
                                         </span>
                                     </label>
@@ -208,42 +212,115 @@
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label for="card_name" class="block text-sm font-medium text-gray-700 mb-1">Name on Card</label>
-                                <input type="text" id="card_name" name="card_name" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- Credit Card Details -->
+                        <div id="credit_card_details" class="payment-details">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label for="card_name" class="block text-sm font-medium text-gray-700 mb-1">Name on Card</label>
+                                    <input type="text" id="card_name" name="card_name" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                                <div>
+                                    <label for="card_number" class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
+                                    <input type="text" id="card_number" name="card_number" placeholder="**** **** **** ****"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
                             </div>
-                            <div>
-                                <label for="card_number" class="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                                <input type="text" id="card_number" name="card_number" placeholder="**** **** **** ****"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div>
+                                    <label for="expiry_month" class="block text-sm font-medium text-gray-700 mb-1">Expiry Month</label>
+                                    <select id="expiry_month" name="expiry_month" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        @for($i = 1; $i <= 12; $i++)
+                                        <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="expiry_year" class="block text-sm font-medium text-gray-700 mb-1">Expiry Year</label>
+                                    <select id="expiry_year" name="expiry_year" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                        @for($i = date('Y'); $i <= date('Y') + 10; $i++)
+                                        <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
+                                    <input type="text" id="cvv" name="cvv" placeholder="***"
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                            <div>
-                                <label for="expiry_month" class="block text-sm font-medium text-gray-700 mb-1">Expiry Month</label>
-                                <select id="expiry_month" name="expiry_month" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    @for($i = 1; $i <= 12; $i++)
-                                    <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
-                                    @endfor
-                                </select>
+                        <!-- PayPal Details -->
+                        <div id="paypal_details" class="payment-details hidden mb-6">
+                            <div class="bg-blue-50 p-4 rounded-md mb-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fab fa-paypal text-blue-500 text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-blue-800">PayPal Checkout</h3>
+                                        <p class="mt-1 text-sm text-blue-700">
+                                            You'll be redirected to PayPal to complete your payment securely. After payment, you'll return to our site to complete your order.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <label for="expiry_year" class="block text-sm font-medium text-gray-700 mb-1">Expiry Year</label>
-                                <select id="expiry_year" name="expiry_year" 
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    @for($i = date('Y'); $i <= date('Y') + 10; $i++)
-                                    <option value="{{ $i }}">{{ $i }}</option>
-                                    @endfor
-                                </select>
+                            
+                            <div class="text-center">
+                                <img src="{{ asset('images/paypal-secure.png') }}" alt="PayPal Secure Payment" class="h-12 mx-auto mb-2">
+                                <p class="text-sm text-gray-500">Protected by PayPal's security encryption</p>
                             </div>
-                            <div>
-                                <label for="cvv" class="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                                <input type="text" id="cvv" name="cvv" placeholder="***"
+                        </div>
+                        
+                        <!-- Bank Transfer Details -->
+                        <div id="bank_details" class="payment-details hidden mb-6">
+                            <div class="bg-gray-50 p-4 rounded-md mb-4">
+                                <div class="flex items-start">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-university text-gray-600 text-xl"></i>
+                                    </div>
+                                    <div class="ml-3">
+                                        <h3 class="text-sm font-medium text-gray-800">Bank Transfer Instructions</h3>
+                                        <p class="mt-1 text-sm text-gray-600">
+                                            After placing your order, please transfer the total amount to our bank account below. Your order will be processed once payment is confirmed.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white border border-gray-200 rounded-md overflow-hidden">
+                                <div class="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                                    <h3 class="text-sm font-medium text-gray-800">Bank Account Details</h3>
+                                </div>
+                                <div class="p-4 space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">Bank Name:</span>
+                                        <span class="text-sm font-medium">Bank Central Asia (BCA)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">Account Number:</span>
+                                        <span class="text-sm font-medium">1234-5678-9012-3456</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">Account Name:</span>
+                                        <span class="text-sm font-medium">PT STEP UP INDONESIA</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-sm text-gray-600">Reference:</span>
+                                        <span class="text-sm font-medium">Order #{{ time() }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4">
+                                <label for="payment_proof" class="block text-sm font-medium text-gray-700 mb-1">Upload Payment Proof (Optional)</label>
+                                <input type="file" id="payment_proof" name="payment_proof" 
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <p class="mt-1 text-xs text-gray-500">You can also upload your payment proof later from your account dashboard</p>
                             </div>
                         </div>
                         
@@ -263,4 +340,80 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Payment method selection
+    const paymentRadios = document.querySelectorAll('.payment-radio');
+    const paymentDetails = document.querySelectorAll('.payment-details');
+    const paymentOptions = document.querySelectorAll('#cc_option, #paypal_option, #bank_option');
+    const radioButtons = document.querySelectorAll('.payment-radio-btn');
+    const radioSelections = document.querySelectorAll('.payment-radio-selected');
+    
+    // Function to update payment form
+    function updatePaymentForm() {
+        // Hide all payment details first
+        paymentDetails.forEach(detail => {
+            detail.classList.add('hidden');
+        });
+        
+        // Remove active styling from all options
+        paymentOptions.forEach(option => {
+            option.classList.remove('bg-blue-50', 'border-blue-500');
+        });
+        
+        // Hide all radio selections
+        radioSelections.forEach(selection => {
+            selection.classList.add('hidden');
+        });
+        
+        // Reset all radio buttons border
+        radioButtons.forEach(btn => {
+            btn.classList.remove('border-blue-500');
+            btn.classList.add('border-gray-300');
+        });
+        
+        // Find selected payment method
+        let selectedMethod = '';
+        paymentRadios.forEach(radio => {
+            if (radio.checked) {
+                selectedMethod = radio.value;
+                
+                // Apply active styling
+                const parentOption = radio.closest('div');
+                parentOption.classList.add('bg-blue-50', 'border-blue-500');
+                
+                // Show selected radio button
+                const radioBtn = parentOption.querySelector('.payment-radio-btn');
+                const radioSelected = parentOption.querySelector('.payment-radio-selected');
+                
+                radioBtn.classList.remove('border-gray-300');
+                radioBtn.classList.add('border-blue-500');
+                radioSelected.classList.remove('hidden');
+            }
+        });
+        
+        // Show corresponding payment details
+        if (selectedMethod === 'credit_card') {
+            document.getElementById('credit_card_details').classList.remove('hidden');
+        } else if (selectedMethod === 'paypal') {
+            document.getElementById('paypal_details').classList.remove('hidden');
+        } else if (selectedMethod === 'bank_transfer') {
+            document.getElementById('bank_details').classList.remove('hidden');
+        }
+    }
+    
+    // Add click event listeners to payment method options
+    paymentOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            const radio = this.querySelector('input[type="radio"]');
+            radio.checked = true;
+            updatePaymentForm();
+        });
+    });
+    
+    // Initialize payment form
+    updatePaymentForm();
+});
+</script>
 @endsection
