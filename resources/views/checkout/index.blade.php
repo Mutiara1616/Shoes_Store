@@ -271,7 +271,11 @@
                             </div>
                             
                             <div class="text-center">
-                                <img src="{{ asset('images/paypal-secure.png') }}" alt="PayPal Secure Payment" class="h-12 mx-auto mb-2">
+                                <div class="flex justify-center items-center space-x-2 mb-2">
+                                    <i class="fab fa-paypal text-blue-500 text-2xl"></i>
+                                    <span class="text-lg font-semibold text-blue-700">PayPal</span>
+                                    <i class="fas fa-shield-alt text-gray-600 text-xl"></i>
+                                </div>
                                 <p class="text-sm text-gray-500">Protected by PayPal's security encryption</p>
                             </div>
                         </div>
