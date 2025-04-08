@@ -17,9 +17,17 @@
             <div class="flex items-center space-x-6">
                 <!-- Wishlist Link -->
                 <div class="relative">
-                    <a href="{{ route('wishlist.index') }}" class="text-gray-700 hover:text-blue-600">
-                        <i class="far fa-heart text-xl"></i>
-                    </a>
+                    @if(Auth::guard('shoes')->check())
+                        <a href="{{ route('wishlist.index') }}" class="text-gray-700 hover:text-blue-600">
+                            <i class="far fa-heart text-xl"></i>
+                        </a>
+                    @else
+                        <a href="{{ route('shoes.login') }}" class="text-gray-700 hover:text-blue-600" 
+                           onclick="event.preventDefault(); showLoginNotification();">
+                            <i class="far fa-heart text-xl"></i>
+                        </a>
+                    @endif
+                    
                     @php
                         $wishlistCount = Auth::guard('shoes')->check() ? Auth::guard('shoes')->user()->wishlistItems()->count() : 0;
                     @endphp
@@ -98,3 +106,85 @@
         </div>
     </div>
 </nav>
+<script>
+    function showLoginNotification() {
+        // Cek apakah elemen notifikasi sudah ada
+        let notification = document.getElementById('login-notification');
+        if (!notification) {
+            // Tambahkan style untuk animasi
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                
+                @keyframes scaleIn {
+                    from { transform: scale(0.8); opacity: 0; }
+                    to { transform: scale(1); opacity: 1; }
+                }
+                
+                #notification-overlay {
+                    animation: fadeIn 0.3s ease-out forwards;
+                }
+                
+                #login-notification {
+                    animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                    transform-origin: center;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Buat overlay backdrop
+            const overlay = document.createElement('div');
+            overlay.id = 'notification-overlay';
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50';
+            
+            // Buat elemen notifikasi
+            notification = document.createElement('div');
+            notification.id = 'login-notification';
+            notification.className = 'bg-white border rounded-2xl max-w-md w-96 p-8 relative flex flex-col items-center';
+            notification.innerHTML = `
+                <div class="w-20 h-20 rounded-full bg-red-200 flex items-center justify-center mb-6">
+                    <svg class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-medium text-center mb-6">Please login to access your wishlist</h2>
+                <div class="w-full">
+                    <a href="{{ route('shoes.login') }}" class="block w-full bg-blue-600 text-white py-3 rounded-3xl text-center font-medium hover:bg-blue-700 transition-colors">
+                        Login
+                    </a>
+                </div>
+            `;
+            
+            // Tambahkan notifikasi ke overlay
+            overlay.appendChild(notification);
+            
+            // Tambahkan overlay ke body
+            document.body.appendChild(overlay);
+            
+            // Tambahkan event listener untuk menutup saat klik overlay
+            overlay.addEventListener('click', function(event) {
+                if (event.target === overlay) {
+                    closeNotification();
+                }
+            });
+        }
+    }
+    
+    function closeNotification() {
+        const overlay = document.getElementById('notification-overlay');
+        if (overlay) {
+            // Animasi menutup
+            overlay.style.animation = 'fadeIn 0.3s ease-in reverse forwards';
+            const notification = document.getElementById('login-notification');
+            if (notification) {
+                notification.style.animation = 'scaleIn 0.3s ease-in reverse forwards';
+            }
+            
+            // Hapus elemen setelah animasi selesai
+            setTimeout(() => overlay.remove(), 300);
+        }
+    }
+</script>

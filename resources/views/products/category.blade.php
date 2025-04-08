@@ -10,13 +10,13 @@
             <div class="flex items-center">
                 <form action="{{ url()->current() }}" method="GET" class="flex">
                     <input type="text" name="search" placeholder="Search {{ $category->name }}'s shoes..." 
-                           class="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           class="px-4 py-2 border border-gray-300 rounded-l-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                            value="{{ request('search') }}">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-3xl hover:bg-blue-600">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
-                <select name="sort" id="sort" class="ml-4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                <select name="sort" id="sort" class="ml-4 px-4 py-2 border border-gray-300 rounded-full focus:outline-none"
                         onchange="window.location.href='{{ url()->current() }}?sort='+this.value+'{{ request('brand') ? '&brand='.request('brand') : '' }}{{ request('search') ? '&search='.request('search') : '' }}'">
                     <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="price-low" {{ request('sort') == 'price-low' ? 'selected' : '' }}>Price: Low to High</option>

@@ -11,6 +11,11 @@ class WishlistController extends Controller
 {
     public function index()
     {
+
+        if (!Auth::guard('shoes')->check()) {
+            return redirect()->route('shoes.login')->with('error', 'Please login to view your wishlist');
+        }
+        
         $user = Auth::guard('shoes')->user();
         $wishlistItems = $user->wishlistItems()->with('product')->get();
         
