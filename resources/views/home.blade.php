@@ -244,9 +244,6 @@
                             @endif
                             
                             @if($product->is_featured)
-                                <div class="absolute top-0 right-0 bg-yellow-500 text-white text-xs font-bold px-3 py-1.5 m-3 rounded-full">
-                                    HOT
-                                </div>
                             @endif
                         </div>
                     </a>
