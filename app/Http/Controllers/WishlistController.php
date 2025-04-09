@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Auth;
 
 class WishlistController extends Controller
 {
+    public function index()
+    {
+
+        if (!Auth::guard('shoes')->check()) {
+            return redirect()->route('shoes.login')->with('error', 'Please login to view your wishlist');
+        }
+        
+        $user = Auth::guard('shoes')->user();
+        $wishlistItems = $user->wishlistItems()->with('product')->get();
+        
+        return view('wishlist.index', compact('wishlistItems'));
+    }
+    
     public function add(Product $product)
     {
         $shoesMember = Auth::guard('shoes')->user();
@@ -48,7 +61,17 @@ class WishlistController extends Controller
             abort(403);
         }
         
-        // Add to cart
+        $product = Product::findOrFail($wishlistItem->product_id);
+        
+        // Check if product has sizes or colors
+        if ((is_array($product->sizes) && count($product->sizes) > 0) || 
+            (is_array($product->colors) && count($product->colors) > 0)) {
+            // If product requires size/color selection, redirect to product page
+            return redirect()->route('products.show', $product->slug)
+                ->with('info', 'Please select size and color options before adding to cart.');
+        }
+        
+        // Add to cart only if product doesn't need size/color
         $cart = app(CartController::class)->getOrCreateCart();
         
         $cart->items()->create([
@@ -59,6 +82,6 @@ class WishlistController extends Controller
         // Remove from wishlist
         $wishlistItem->delete();
         
-        return redirect()->back()->with('success', 'Product moved to cart!');
+        return redirect()->route('cart.index')->with('success', 'Product moved to cart!');
     }
 }

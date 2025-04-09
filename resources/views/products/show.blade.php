@@ -82,65 +82,111 @@
                     @endif
                 </div>
                 
-                <div class="border-t border-b border-gray-200 py-4">
-                    <div class="mb-4">
-                        <h3 class="text-sm font-medium text-gray-900 mb-2">Size</h3>
-                        <div class="grid grid-cols-4 gap-2">
-                            @if(is_array($product->sizes) || is_object($product->sizes))
-                                @foreach($product->sizes as $size)
-                                <button type="button" 
-                                        class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
-                                        data-size="{{ $size }}">
-                                    {{ $size }}
-                                </button>
-                                @endforeach
-                            @endif
-                        </div>
+                <!-- Add to Cart Form -->
+                @if ($errors->any())
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
-                    
-                    <div>
-                        <h3 class="text-sm font-medium text-gray-900 mb-2">Color</h3>
-                        <div class="flex space-x-3">
-                            @if(is_array($product->colors) || is_object($product->colors))
-                                @foreach($product->colors as $color)
-                                <button type="button" 
-                                        class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
-                                        style="background-color: {{ $color }};"
-                                        data-color="{{ $color }}">
-                                </button>
-                                @endforeach
-                            @endif
-                        </div>
-                    </div>
-                </div>
+                @endif
                 
-                <form action="{{ route('cart.add') }}" method="POST" class="flex items-center space-x-4">
+                <form action="{{ route('cart.add') }}" method="POST">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    
-                    <div class="flex border border-gray-300 rounded-md">
-                        <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
-                            <i class="fas fa-minus"></i>
-                        </button>
-                        <input type="number" name="quantity" value="1" min="1" 
-                            class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
-                        <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
-                            <i class="fas fa-plus"></i>
-                        </button>
+
+                    <div class="border-t border-b border-gray-200 py-4">
+                        <div class="mb-4">
+                            <h3 class="text-sm font-medium text-gray-900 mb-2">
+                                Size
+                                @if(is_array($product->sizes) && count($product->sizes) > 0)
+                                    <span class="text-red-500">*</span>
+                                @endif
+                            </h3>
+                            <div class="grid grid-cols-4 gap-2">
+                                @if(is_array($product->sizes) || is_object($product->sizes))
+                                    @foreach($product->sizes as $size)
+                                    <button type="button" 
+                                            class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
+                                            data-size="{{ $size }}">
+                                        {{ $size }}
+                                    </button>
+                                    @endforeach
+                                @endif
+                            </div>
+                            @error('size')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-sm font-medium text-gray-900 mb-2">
+                                Color
+                                @if(is_array($product->colors) && count($product->colors) > 0)
+                                    <span class="text-red-500">*</span>
+                                @endif
+                            </h3>
+                            <div class="flex space-x-3">
+                                @if(is_array($product->colors) || is_object($product->colors))
+                                    @foreach($product->colors as $color)
+                                    <button type="button" 
+                                            class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
+                                            style="background-color: {{ $color }};"
+                                            data-color="{{ $color }}">
+                                    </button>
+                                    @endforeach
+                                @endif
+                            </div>
+                            @error('color')
+                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
                     
-                    <input type="hidden" name="size" id="selected_size">
-                    <input type="hidden" name="color" id="selected_color">
-                    
-                    <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
-                        <i class="fas fa-shopping-cart mr-2"></i>
-                        Add to Cart
-                    </button>
-                    
-                    <button type="button" class="p-3 border border-gray-300 rounded-md hover:bg-gray-50">
-                        <i class="far fa-heart text-gray-600"></i>
-                    </button>
+                    <div class="flex items-center space-x-4 mt-6">
+                        <div class="flex border border-gray-300 rounded-md">
+                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" name="quantity" value="1" min="1" 
+                                class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
+                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="size" id="selected_size">
+                        <input type="hidden" name="color" id="selected_color">
+                        
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
+                            <i class="fas fa-shopping-cart mr-2"></i>
+                            Add to Cart
+                        </button>
+                    </div>
                 </form>
+                
+                <!-- Wishlist button - Separate from the cart form -->
+                @auth('shoes')
+                    <form action="{{ route('wishlist.add', $product) }}" method="POST" class="mt-4">
+                        @csrf
+                        <button type="submit" class="flex items-center text-gray-600 hover:text-red-600">
+                            @if(Auth::guard('shoes')->user()->wishlistItems()->where('product_id', $product->id)->exists())
+                                <i class="fas fa-heart text-red-600 mr-2"></i>
+                                <span>Added to Wishlist</span>
+                            @else
+                                <i class="far fa-heart mr-2"></i>
+                                <span>Add to Wishlist</span>
+                            @endif
+                        </button>
+                    </form>
+                @else
+                    <a href="{{ route('shoes.login') }}" class="mt-4 flex items-center text-gray-600 hover:text-gray-800">
+                        <i class="far fa-heart mr-2"></i>
+                        <span>Add to Wishlist</span>
+                    </a>
+                @endauth
                 
                 <div class="pt-4">
                     <p class="text-green-600 flex items-center">

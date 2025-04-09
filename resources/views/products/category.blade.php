@@ -10,13 +10,13 @@
             <div class="flex items-center">
                 <form action="{{ url()->current() }}" method="GET" class="flex">
                     <input type="text" name="search" placeholder="Search {{ $category->name }}'s shoes..." 
-                           class="px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           class="px-4 py-2 border border-gray-300 rounded-l-3xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                            value="{{ request('search') }}">
-                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-3xl hover:bg-blue-600">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
-                <select name="sort" id="sort" class="ml-4 px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+                <select name="sort" id="sort" class="ml-4 px-4 py-2 border border-gray-300 rounded-full focus:outline-none"
                         onchange="window.location.href='{{ url()->current() }}?sort='+this.value+'{{ request('brand') ? '&brand='.request('brand') : '' }}{{ request('search') ? '&search='.request('search') : '' }}'">
                     <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="price-low" {{ request('sort') == 'price-low' ? 'selected' : '' }}>Price: Low to High</option>
@@ -66,7 +66,7 @@
                 @if($products->count() > 0)
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($products as $product)
-                    <div class="bg-white rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-2">
+                    <div class="bg-white rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-2 relative">
                         <a href="{{ route('products.show', $product->slug) }}">
                             <div class="relative h-64">
                                 @php
@@ -83,13 +83,40 @@
                                     SALE
                                 </div>
                                 @endif
-                                <div class="absolute top-0 right-0 m-2">
-                                    <button class="bg-white rounded-full p-2 shadow-md text-gray-400 hover:text-red-500">
-                                        <i class="fas fa-heart"></i>
-                                    </button>
-                                </div>
                             </div>
                         </a>
+                        
+                        <!-- Wishlist icon - outside of the main product link -->
+                        <div class="absolute top-0 right-0 m-2">
+                            @auth('shoes')
+                                @php
+                                    $wishlistItem = Auth::guard('shoes')->user()->wishlistItems()->where('product_id', $product->id)->first();
+                                    $inWishlist = !is_null($wishlistItem);
+                                @endphp
+                                
+                                @if($inWishlist)
+                                    <form action="{{ route('wishlist.remove', $wishlistItem->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="bg-white rounded-full p-2 shadow-md text-red-500 hover:text-red-700 transition-colors duration-200">
+                                            <i class="fas fa-heart"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('wishlist.add', $product->id) }}" method="POST" class="inline">
+                                        @csrf
+                                        <button type="submit" class="bg-white rounded-full p-2 shadow-md text-gray-400 hover:text-red-500 transition-colors duration-200">
+                                            <i class="far fa-heart"></i>
+                                        </button>
+                                    </form>
+                                @endif
+                            @else
+                                <a href="{{ route('shoes.login') }}" class="bg-white rounded-full p-2 shadow-md text-gray-400 hover:text-red-500 inline-block">
+                                    <i class="far fa-heart"></i>
+                                </a>
+                            @endauth
+                        </div>
+                        
                         <div class="p-4">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-sm text-gray-500">{{ $product->category_name }}</span>
@@ -109,9 +136,21 @@
                                     <span class="text-lg font-bold text-gray-900">Rp{{ number_format($product->price, 0, ',', '.') }}</span>
                                     @endif
                                 </div>
-                                <button class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300">
-                                    <i class="fas fa-shopping-cart"></i>
-                                </button>
+                                
+                                @if(empty($product->sizes) && empty($product->colors))
+                                    <form action="{{ route('cart.add') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300">
+                                            <i class="fas fa-shopping-cart"></i>
+                                        </button>
+                                    </form>
+                                @else
+                                    <a href="{{ route('products.show', $product->slug) }}" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300 inline-flex items-center justify-center">
+                                        <i class="fas fa-shopping-cart"></i>
+                                    </a>
+                                @endif
                             </div>
                         </div>
                     </div>
