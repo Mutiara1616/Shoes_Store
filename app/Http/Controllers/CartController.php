@@ -14,6 +14,15 @@ class CartController extends Controller
 {
     public function getOrCreateCart()
     {
+        // Jika user login, prioritaskan cart berdasarkan user ID
+        if (Auth::guard('shoes')->check()) {
+            $cart = Cart::where('shoes_member_id', Auth::guard('shoes')->id())
+                ->first();
+            
+            if ($cart) return $cart;
+        }
+
+        // Gunakan session ID
         $sessionId = session()->get('cart_session_id');
 
         if (!$sessionId) {
@@ -21,17 +30,10 @@ class CartController extends Controller
             session()->put('cart_session_id', $sessionId);
         }
 
-        $cart = Cart::firstOrCreate(
+        return Cart::firstOrCreate(
             ['session_id' => $sessionId],
             ['shoes_member_id' => Auth::guard('shoes')->id()]
         );
-
-        // If user is logged in but cart doesn't have shoes_member_id
-        if (Auth::guard('shoes')->check() && !$cart->shoes_member_id) {
-            $cart->update(['shoes_member_id' => Auth::guard('shoes')->id()]);
-        }
-
-        return $cart;
     }
 
     public function index()
@@ -77,27 +79,25 @@ class CartController extends Controller
 
         $cart = $this->getOrCreateCart();
 
-        // Check if product already exists in cart with same size and color
-        $cartItem = $cart->items()
-            ->where('product_id', $request->product_id)
-            ->where('size', $request->size)
-            ->where('color', $request->color)
-            ->first();
+        // Debug lines
+        \Log::info('Adding to cart', [
+            'cart_id' => $cart->id,
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity
+        ]);
 
-        if ($cartItem) {
-            // Update quantity if item exists
-            $cartItem->update([
-                'quantity' => $cartItem->quantity + $request->quantity
-            ]);
-        } else {
-            // Create new cart item
-            $cart->items()->create([
-                'product_id' => $request->product_id,
-                'quantity' => $request->quantity,
-                'size' => $request->size,
-                'color' => $request->color,
-            ]);
-        }
+        $cartItem = $cart->items()->create([
+            'product_id' => $request->product_id,
+            'quantity' => $request->quantity,
+            'size' => $request->size,
+            'color' => $request->color,
+        ]);
+
+        // Debug line
+        \Log::info('Cart item created', [
+            'cart_item_id' => $cartItem->id,
+            'cart_id' => $cartItem->cart_id
+        ]);
 
         return redirect()->route('cart.index')->with('success', 'Product added to cart successfully');
     }
@@ -107,13 +107,15 @@ class CartController extends Controller
         $product = $cartItem->product;
 
         $request->validate([
-            'quantity' => 'required|integer|min:1|max:'.$product->stock,
+            'quantity' => [
+                'required', 
+                'integer', 
+                'min:1', 
+                "max:{$product->stock}"
+            ],
+        ], [
+            'quantity.max' => "Stok produk {$product->name} hanya tersisa {$product->stock}."
         ]);
-
-        // Validasi stok tambahan
-        if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Stok produk tidak mencukupi');
-        }
 
         $cartItem->update([
             'quantity' => $request->quantity

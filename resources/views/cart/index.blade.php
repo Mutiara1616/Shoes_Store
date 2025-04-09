@@ -12,17 +12,23 @@
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         @endif
-        {{-- TAMBAHKAN DI SINI --}}
+
         @foreach($cart->items as $item)
             @if($item->product->stock < $item->quantity)
                 <div class="alert alert-warning mb-6">
                     <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
-                        <p class="font-bold">Warning</p>
-                        <p>Stock for "{{ $item->product->name }}" is insufficient (Available: {{ $item->product->stock }}). Please update your cart.</p>
+                        <p class="font-bold">Peringatan</p>
+                        <p>Stok "{{ $item->product->name }}" hanya tersisa {{ $item->product->stock }}. Silakan perbarui keranjang Anda.</p>
                     </div>
                 </div>
             @endif
         @endforeach
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+                <span class="block sm:inline">{!! nl2br(e(session('error'))) !!}</span>
+            </div>
+        @endif
 
         @if($cart->items->isEmpty())
             <div class="bg-gray-50 rounded-lg p-8 text-center">
@@ -148,7 +154,17 @@
                     <i class="fas fa-arrow-left mr-2"></i>
                     Continue Shopping
                 </a>
-                <a href="{{ route('checkout.index') }}" class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                <a href="{{ route('checkout.index') }}" 
+                class="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-sm font-medium text-white 
+                @if($cart->items->contains(function($item) { return $item->product->stock < $item->quantity; })) 
+                    bg-gray-400 cursor-not-allowed 
+                @else 
+                    bg-blue-600 hover:bg-blue-700 
+                @endif 
+                focus:outline-none"
+                @if($cart->items->contains(function($item) { return $item->product->stock < $item->quantity; })) 
+                    onclick="event.preventDefault(); alert('Beberapa produk dalam keranjang Anda melebihi stok yang tersedia.');" 
+                @endif>
                     Proceed to Checkout
                     <i class="fas fa-arrow-right ml-2"></i>
                 </a>

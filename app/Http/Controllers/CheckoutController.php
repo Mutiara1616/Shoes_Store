@@ -35,7 +35,32 @@ class CheckoutController extends Controller
 
     public function process(Request $request)
     {
-        // 1. Validasi Alamat Pengiriman
+
+        // Pre-Check Stok (Sebelum Transaksi)
+    $cart = app(CartController::class)->getOrCreateCart();
+    $outOfStockItems = [];
+
+    foreach ($cart->items as $item) {
+        $product = Product::find($item->product_id);
+
+        if (!$product || $product->stock < $item->quantity) {
+            $outOfStockItems[] = [
+                'name' => $product->name,
+                'available_stock' => $product->stock
+            ];
+        }
+    }
+
+    // Jika ada produk yang stoknya tidak mencukupi
+    if (!empty($outOfStockItems)) {
+        $errorMessage = "Stok produk tidak mencukupi:\n";
+        foreach ($outOfStockItems as $item) {
+            $errorMessage .= "- {$item['name']} (Stok tersedia: {$item['available_stock']})\n";
+        }
+        
+        return redirect()->route('cart.index')->with('error', $errorMessage);
+    }
+
         $request->validate([
             'shipping_address' => 'required|string|max:255',
             'shipping_city' => 'required|string|max:100',
@@ -45,7 +70,6 @@ class CheckoutController extends Controller
             'notes' => 'nullable|string|max:500',
         ]);
 
-        // 2. Validasi Keranjang dan User
         $cart = app(CartController::class)->getOrCreateCart();
         if ($cart->items->isEmpty()) {
             return redirect()->route('products.index')
@@ -70,21 +94,18 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-            // 4. Validasi Akhir + Locking (Dalam Transaksi)
-            $order = Order::create([/* data order... */]);
+            $order = Order::create([]);
 
             foreach ($cart->items as $item) {
                 $product = Product::lockForUpdate()->find($item->product_id);
 
-                // Double-check stok dengan locking
                 if ($product->stock < $item->quantity) {
                     throw new \Exception("Stok {$product->name} habis saat proses checkout.");
                 }
 
-                // Kurangi stok dengan atomic decrement
                 $product->decrement('stock', $item->quantity);
 
-                $order->orderItems()->create([/* data item... */]);
+                $order->orderItems()->create([]);
             }
 
             $cart->items()->delete();
@@ -101,7 +122,6 @@ class CheckoutController extends Controller
 
     public function success(Order $order)
     {
-        // Ensure user can only view their own orders
         if ($order->shoes_member_id !== Auth::guard('shoes')->id()) {
             abort(403);
         }
