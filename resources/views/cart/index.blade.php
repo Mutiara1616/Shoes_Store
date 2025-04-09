@@ -6,13 +6,24 @@
 <div class="bg-white pt-24 pb-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold mb-6">Your Shopping Cart</h1>
-        
+
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6 relative" role="alert">
                 <span class="block sm:inline">{{ session('success') }}</span>
             </div>
         @endif
-        
+        {{-- TAMBAHKAN DI SINI --}}
+        @foreach($cart->items as $item)
+            @if($item->product->stock < $item->quantity)
+                <div class="alert alert-warning mb-6">
+                    <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+                        <p class="font-bold">Warning</p>
+                        <p>Stock for "{{ $item->product->name }}" is insufficient (Available: {{ $item->product->stock }}). Please update your cart.</p>
+                    </div>
+                </div>
+            @endif
+        @endforeach
+
         @if($cart->items->isEmpty())
             <div class="bg-gray-50 rounded-lg p-8 text-center">
                 <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
@@ -44,7 +55,7 @@
                                             @php
                                                 $images = is_array($item->product->images) ? $item->product->images : json_decode($item->product->images, true);
                                                 $image = !empty($images) && is_array($images) ? $images[0] : 'https://via.placeholder.com/300';
-                                                
+
                                                 // If it's a storage path, use asset helper
                                                 if(is_string($image) && !filter_var($image, FILTER_VALIDATE_URL) && !str_starts_with($image, 'http')) {
                                                     $image = asset('storage/' . $image);
@@ -87,8 +98,8 @@
                                             <button type="button" class="px-3 py-1 text-gray-600 hover:bg-gray-100 quantity-decrease" data-item-id="{{ $item->id }}">
                                                 <i class="fas fa-minus"></i>
                                             </button>
-                                            <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" 
-                                                class="w-12 text-center border-x border-gray-300 py-1 focus:outline-none quantity-input no-spinners" 
+                                            <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
+                                                class="w-12 text-center border-x border-gray-300 py-1 focus:outline-none quantity-input no-spinners"
                                                 data-item-id="{{ $item->id }}">
                                             <button type="button" class="px-3 py-1 text-gray-600 hover:bg-gray-100 quantity-increase" data-item-id="{{ $item->id }}">
                                                 <i class="fas fa-plus"></i>
@@ -113,7 +124,7 @@
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="border-t border-gray-200 px-6 py-4 bg-gray-50">
                     <div class="flex justify-between items-center">
                         <form action="{{ route('cart.clear') }}" method="POST">
@@ -131,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="mt-8 flex justify-between">
                 <a href="{{ route('home') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
                     <i class="fas fa-arrow-left mr-2"></i>
@@ -153,7 +164,7 @@
         -webkit-appearance: none;
         margin: 0;
     }
-    
+
     /* For Firefox */
     input.no-spinners[type=number] {
         -moz-appearance: textfield;
@@ -166,12 +177,12 @@
         function updateCart(itemId) {
             document.getElementById('update-form-' + itemId).submit();
         }
-        
+
         // Quantity buttons functionality
         const decreaseButtons = document.querySelectorAll('.quantity-decrease');
         const increaseButtons = document.querySelectorAll('.quantity-increase');
         const quantityInputs = document.querySelectorAll('.quantity-input');
-        
+
         decreaseButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const itemId = this.getAttribute('data-item-id');
@@ -182,7 +193,7 @@
                 }
             });
         });
-        
+
         increaseButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const itemId = this.getAttribute('data-item-id');
@@ -191,7 +202,7 @@
                 updateCart(itemId);
             });
         });
-        
+
         // Update on direct input change as well
         quantityInputs.forEach(input => {
             input.addEventListener('change', function() {

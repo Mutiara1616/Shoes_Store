@@ -22,7 +22,7 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Product::class);
     }
-    
+
     // Add subtotal accessor
     public function getSubtotalAttribute()
     {
