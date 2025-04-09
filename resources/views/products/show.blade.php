@@ -93,10 +93,81 @@
                     </div>
                 @endif
                 
-                <form action="{{ route('cart.add') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                @if(Auth::guard('shoes')->check())
+                    <form action="{{ route('cart.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
 
+                        <div class="border-t border-b border-gray-200 py-4">
+                            <div class="mb-4">
+                                <h3 class="text-sm font-medium text-gray-900 mb-2">
+                                    Size
+                                    @if(is_array($product->sizes) && count($product->sizes) > 0)
+                                        <span class="text-red-500">*</span>
+                                    @endif
+                                </h3>
+                                <div class="grid grid-cols-4 gap-2">
+                                    @if(is_array($product->sizes) || is_object($product->sizes))
+                                        @foreach($product->sizes as $size)
+                                        <button type="button" 
+                                                class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
+                                                data-size="{{ $size }}">
+                                            {{ $size }}
+                                        </button>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                @error('size')
+                                    <p class="mt-1 text-sm text-red-600">{{ $errors->first('size') }}</p>
+                                @enderror
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-sm font-medium text-gray-900 mb-2">
+                                    Color
+                                    @if(is_array($product->colors) && count($product->colors) > 0)
+                                        <span class="text-red-500">*</span>
+                                    @endif
+                                </h3>
+                                <div class="flex space-x-3">
+                                    @if(is_array($product->colors) || is_object($product->colors))
+                                        @foreach($product->colors as $color)
+                                        <button type="button" 
+                                                class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
+                                                style="background-color: {{ $color }};"
+                                                data-color="{{ $color }}">
+                                        </button>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                @error('color')
+                                    <p class="mt-1 text-sm text-red-600">{{ $errors->first('color') }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 mt-6">
+                            <div class="flex border border-gray-300 rounded-md">
+                                <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" name="quantity" value="1" min="1" 
+                                    class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
+                                <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            
+                            <input type="hidden" name="size" id="selected_size">
+                            <input type="hidden" name="color" id="selected_color">
+                            
+                            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
+                                <i class="fas fa-shopping-cart mr-2"></i>
+                                Add to Cart
+                            </button>
+                        </div>
+                    </form>
+                @else
                     <div class="border-t border-b border-gray-200 py-4">
                         <div class="mb-4">
                             <h3 class="text-sm font-medium text-gray-900 mb-2">
@@ -109,16 +180,12 @@
                                 @if(is_array($product->sizes) || is_object($product->sizes))
                                     @foreach($product->sizes as $size)
                                     <button type="button" 
-                                            class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
-                                            data-size="{{ $size }}">
+                                            class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                                         {{ $size }}
                                     </button>
                                     @endforeach
                                 @endif
                             </div>
-                            @error('size')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
                         
                         <div>
@@ -133,39 +200,34 @@
                                     @foreach($product->colors as $color)
                                     <button type="button" 
                                             class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
-                                            style="background-color: {{ $color }};"
-                                            data-color="{{ $color }}">
+                                            style="background-color: {{ $color }};">
                                     </button>
                                     @endforeach
                                 @endif
                             </div>
-                            @error('color')
-                                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                            @enderror
                         </div>
                     </div>
                     
                     <div class="flex items-center space-x-4 mt-6">
                         <div class="flex border border-gray-300 rounded-md">
-                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
+                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100">
                                 <i class="fas fa-minus"></i>
                             </button>
-                            <input type="number" name="quantity" value="1" min="1" 
-                                class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
-                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
+                            <input type="number" value="1" min="1" 
+                                class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none">
+                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100">
                                 <i class="fas fa-plus"></i>
                             </button>
                         </div>
                         
-                        <input type="hidden" name="size" id="selected_size">
-                        <input type="hidden" name="color" id="selected_color">
-                        
-                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
+                        <a href="{{ route('shoes.login') }}" 
+                           onclick="event.preventDefault(); showLoginCartNotification();" 
+                           class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
                             <i class="fas fa-shopping-cart mr-2"></i>
                             Add to Cart
-                        </button>
+                        </a>
                     </div>
-                </form>
+                @endif
                 
                 <!-- Wishlist button - Separate from the cart form -->
                 @auth('shoes')
@@ -182,7 +244,8 @@
                         </button>
                     </form>
                 @else
-                    <a href="{{ route('shoes.login') }}" class="mt-4 flex items-center text-gray-600 hover:text-gray-800">
+                    <a href="{{ route('shoes.login') }}" class="mt-4 flex items-center text-gray-600 hover:text-gray-800"
+                       onclick="event.preventDefault(); showLoginNotification();">
                         <i class="far fa-heart mr-2"></i>
                         <span>Add to Wishlist</span>
                     </a>

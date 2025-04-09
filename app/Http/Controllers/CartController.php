@@ -44,11 +44,17 @@ class CartController extends Controller
 
     public function add(Request $request)
     {
+        // Periksa apakah user sudah login
+        if (!Auth::guard('shoes')->check()) {
+            return redirect()->route('shoes.login')
+                ->with('error', 'Please login to add items to your cart');
+        }
+        
         $product = Product::findOrFail($request->product_id);
 
         // Validasi stok
         if ($product->stock < $request->quantity) {
-        return back()->with('error', 'Stok produk tidak mencukupi');
+            return back()->with('error', 'Stok produk tidak mencukupi');
         }
 
         // Check if product has sizes and colors and validate accordingly
@@ -130,5 +136,4 @@ class CartController extends Controller
 
         return redirect()->route('cart.index')->with('success', 'Cart cleared successfully');
     }
-
 }

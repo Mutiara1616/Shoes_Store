@@ -111,7 +111,8 @@
                                     </form>
                                 @endif
                             @else
-                                <a href="{{ route('shoes.login') }}" class="bg-white rounded-full p-2 shadow-md text-gray-400 hover:text-red-500 inline-block">
+                                <a href="{{ route('shoes.login') }}" class="bg-white rounded-full p-2 shadow-md text-gray-400 hover:text-red-500 inline-block"
+                                   onclick="event.preventDefault(); showLoginNotification();">
                                     <i class="far fa-heart"></i>
                                 </a>
                             @endauth
@@ -137,17 +138,25 @@
                                     @endif
                                 </div>
                                 
-                                @if(empty($product->sizes) && empty($product->colors))
-                                    <form action="{{ route('cart.add') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300">
+                                @if(Auth::guard('shoes')->check())
+                                    @if(empty($product->sizes) && empty($product->colors))
+                                        <form action="{{ route('cart.add') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                            <input type="hidden" name="quantity" value="1">
+                                            <button type="submit" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300">
+                                                <i class="fas fa-shopping-cart"></i>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('products.show', $product->slug) }}" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300 inline-flex items-center justify-center">
                                             <i class="fas fa-shopping-cart"></i>
-                                        </button>
-                                    </form>
+                                        </a>
+                                    @endif
                                 @else
-                                    <a href="{{ route('products.show', $product->slug) }}" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300 inline-flex items-center justify-center">
+                                    <a href="{{ route('shoes.login') }}" 
+                                       onclick="event.preventDefault(); showLoginCartNotification();" 
+                                       class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300 inline-flex items-center justify-center">
                                         <i class="fas fa-shopping-cart"></i>
                                     </a>
                                 @endif

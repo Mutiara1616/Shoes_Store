@@ -46,14 +46,18 @@
                         <i class="fas fa-shopping-bag text-xl"></i>
                     </a>
                     @php
-                        $cart = App\Models\Cart::where('session_id', session()->get('cart_session_id'))
-                            ->orWhere(function($query) {
-                                if(Auth::guard('shoes')->check()) {
-                                    $query->where('shoes_member_id', Auth::guard('shoes')->id());
-                                }
-                            })
-                            ->first();
-                        $cartCount = $cart ? $cart->items->count() : 0;
+                        // Perbaikan perhitungan jumlah item cart
+                        if(Auth::guard('shoes')->check()) {
+                            // Jika user login, ambil dari user ID
+                            $cart = App\Models\Cart::where('shoes_member_id', Auth::guard('shoes')->id())->first();
+                        } else {
+                            // Jika belum login, ambil dari session ID
+                            $sessionId = session()->get('cart_session_id');
+                            $cart = $sessionId ? App\Models\Cart::where('session_id', $sessionId)->first() : null;
+                        }
+                        
+                        // Hitung jumlah item, bukan jumlah jenis produk
+                        $cartCount = $cart ? $cart->items->sum('quantity') : 0;
                     @endphp
                     @if($cartCount > 0)
                         <div class="absolute -top-1 -right-1">
@@ -179,6 +183,90 @@
             // Animasi menutup
             overlay.style.animation = 'fadeIn 0.3s ease-in reverse forwards';
             const notification = document.getElementById('login-notification');
+            if (notification) {
+                notification.style.animation = 'scaleIn 0.3s ease-in reverse forwards';
+            }
+            
+            // Hapus elemen setelah animasi selesai
+            setTimeout(() => overlay.remove(), 300);
+        }
+    }
+    
+    function showLoginCartNotification() {
+        // Cek apakah elemen notifikasi sudah ada
+        let notification = document.getElementById('login-cart-notification');
+        if (!notification) {
+            // Tambahkan style untuk animasi jika belum ada
+            if (!document.querySelector('style[data-id="notification-animations"]')) {
+                const style = document.createElement('style');
+                style.setAttribute('data-id', 'notification-animations');
+                style.textContent = `
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    
+                    @keyframes scaleIn {
+                        from { transform: scale(0.8); opacity: 0; }
+                        to { transform: scale(1); opacity: 1; }
+                    }
+                    
+                    #notification-overlay {
+                        animation: fadeIn 0.3s ease-out forwards;
+                    }
+                    
+                    #login-cart-notification {
+                        animation: scaleIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                        transform-origin: center;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            // Buat overlay backdrop
+            const overlay = document.createElement('div');
+            overlay.id = 'notification-overlay';
+            overlay.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50';
+            
+            // Buat elemen notifikasi
+            notification = document.createElement('div');
+            notification.id = 'login-cart-notification';
+            notification.className = 'bg-white border rounded-2xl max-w-md w-96 p-8 relative flex flex-col items-center';
+            notification.innerHTML = `
+                <div class="w-20 h-20 rounded-full bg-blue-200 flex items-center justify-center mb-6">
+                    <svg class="h-10 w-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-medium text-center mb-6">Please login to add items to your cart</h2>
+                <div class="w-full">
+                    <a href="{{ route('shoes.login') }}" class="block w-full bg-blue-600 text-white py-3 rounded-3xl text-center font-medium hover:bg-blue-700 transition-colors">
+                        Login
+                    </a>
+                </div>
+            `;
+            
+            // Tambahkan notifikasi ke overlay
+            overlay.appendChild(notification);
+            
+            // Tambahkan overlay ke body
+            document.body.appendChild(overlay);
+            
+            // Tambahkan event listener untuk menutup saat klik overlay
+            overlay.addEventListener('click', function(event) {
+                if (event.target === overlay) {
+                    closeCartNotification();
+                }
+            });
+        }
+    }
+    
+    function closeCartNotification() {
+        const overlay = document.getElementById('notification-overlay');
+        if (overlay) {
+            // Animasi menutup
+            overlay.style.animation = 'fadeIn 0.3s ease-in reverse forwards';
+            const notification = document.getElementById('login-cart-notification');
             if (notification) {
                 notification.style.animation = 'scaleIn 0.3s ease-in reverse forwards';
             }
