@@ -77,3 +77,6 @@ Route::middleware('auth:shoes')->group(function () {
 
 // new arrival homepagae
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// AI Chat endpoint
+Route::post('/api/chat', [App\Http\Controllers\ChatController::class, 'chat'])->name('api.chat');
