@@ -115,7 +115,7 @@
        <div class="max-w-3xl mx-auto text-center">
            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 fade-in-up">Step Into Style</h1>
            <p class="text-xl md:text-2xl text-white mb-10 fade-in-up-delay-1">Discover premium footwear for every occasion</p>
-           <a href="{{ route('products.index') }}" class="inline-block bg-white text-blue-700 px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 btn-rounded fade-in-up-delay-2">
+           <a href="{{ route('category.men') }}" class="inline-block bg-white text-blue-700 px-8 py-4 rounded-full font-medium hover:bg-gray-100 transition-all duration-300 btn-rounded fade-in-up-delay-2">
                Explore Collection
            </a>
        </div>
@@ -784,7 +784,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return text;
     }
     
-    // Display message with improved formatting
     function displayMessage(message) {
         const messageWrapper = document.createElement('div');
         messageWrapper.className = message.sender === 'user' ? 'user-message-wrapper fade-in' : 'assistant-message-wrapper fade-in';
@@ -807,22 +806,16 @@ document.addEventListener('DOMContentLoaded', function() {
         messageWrapper.appendChild(messageDiv);
         chatMessages.appendChild(messageWrapper);
         
-        // Ensure scrolling to the bottom works reliably
         setTimeout(() => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }, 100);
     }
     
-    
-    // Send message to AI
     async function sendMessageToAI(message) {
         try {
-            // Simulate delay for typing indicator
             setTimeout(() => {
-                // Remove typing indicator
                 removeTypingIndicator();
                 
-                // Display test response 
                 displayMessage({
                     text: getTestResponse(message),
                     sender: 'assistant'
@@ -844,10 +837,8 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const data = await response.json();
             
-            // Remove typing indicator
             removeTypingIndicator();
             
-            // Display AI response
             displayMessage({
                 text: data.response,
                 sender: 'assistant'
@@ -856,10 +847,8 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('Error:', error);
             
-            // Remove typing indicator
             removeTypingIndicator();
             
-            // Display error message
             displayMessage({
                 text: "Maaf, saya sedang mengalami masalah koneksi. Silakan coba lagi nanti.",
                 sender: 'assistant'

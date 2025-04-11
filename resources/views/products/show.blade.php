@@ -1,4 +1,3 @@
-<!-- resources/views/products/show.blade.php -->
 @extends('layouts.app')
 
 @section('title', $product->name . ' - STEP UP')
@@ -37,8 +36,14 @@
                 @endphp
                 
                 <!-- Main Image -->
-                <div class="aspect-w-3 aspect-h-2 rounded-lg overflow-hidden bg-gray-100">
+                <div class="aspect-w-3 aspect-h-2 rounded-lg overflow-hidden bg-gray-100 relative">
                     <img src="{{ asset('storage/' . $mainImage) }}" alt="{{ $product->name }}" class="w-full h-full object-center object-cover">
+                    
+                    @if($product->stock <= 0)
+                        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <span class="bg-red-500 text-white px-6 py-3 rounded-full font-bold text-xl">SOLD OUT</span>
+                        </div>
+                    @endif
                 </div>
                 
                 <!-- Thumbnail Images -->
@@ -82,7 +87,33 @@
                     @endif
                 </div>
                 
-                <!-- Add to Cart Form -->
+                <!-- Stock Status -->
+                <div class="pt-4">
+                    @if($product->stock > 0)
+                        <p class="text-green-600 flex items-center">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            <span>In stock - {{ $product->stock }} available</span>
+                        </p>
+                    @else
+                        <p class="text-red-600 flex items-center">
+                            <i class="fas fa-times-circle mr-2"></i>
+                            <span>Sold Out</span>
+                        </p>
+                    @endif
+                    
+                    <div class="mt-2 flex space-x-6 text-sm text-gray-500">
+                        <div class="flex items-center">
+                            <i class="fas fa-shipping-fast mr-2"></i>
+                            <span>Free shipping</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            <span>30 day returns</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Error messages -->
                 @if ($errors->any())
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                         <ul>
@@ -93,11 +124,83 @@
                     </div>
                 @endif
                 
-                @if(Auth::guard('shoes')->check())
-                    <form action="{{ route('cart.add') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                <!-- Add to Cart Form -->
+                @if($product->stock > 0)
+                    @auth('shoes')
+                        <form action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
 
+                            <div class="border-t border-b border-gray-200 py-4">
+                                <div class="mb-4">
+                                    <h3 class="text-sm font-medium text-gray-900 mb-2">
+                                        Size
+                                        @if(is_array($product->sizes) && count($product->sizes) > 0)
+                                            <span class="text-red-500">*</span>
+                                        @endif
+                                    </h3>
+                                    <div class="grid grid-cols-4 gap-2">
+                                        @if(is_array($product->sizes) || is_object($product->sizes))
+                                            @foreach($product->sizes as $size)
+                                            <button type="button" 
+                                                    class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
+                                                    data-size="{{ $size }}">
+                                                {{ $size }}
+                                            </button>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    @error('size')
+                                        <p class="mt-1 text-sm text-red-600">{{ $errors->first('size') }}</p>
+                                    @enderror
+                                </div>
+                                
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-900 mb-2">
+                                        Color
+                                        @if(is_array($product->colors) && count($product->colors) > 0)
+                                            <span class="text-red-500">*</span>
+                                        @endif
+                                    </h3>
+                                    <div class="flex space-x-3">
+                                        @if(is_array($product->colors) || is_object($product->colors))
+                                            @foreach($product->colors as $color)
+                                            <button type="button" 
+                                                    class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
+                                                    style="background-color: {{ $color }};"
+                                                    data-color="{{ $color }}">
+                                            </button>
+                                            @endforeach
+                                        @endif
+                                    </div>
+                                    @error('color')
+                                        <p class="mt-1 text-sm text-red-600">{{ $errors->first('color') }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center space-x-4 mt-6">
+                                <div class="flex border border-gray-300 rounded-md">
+                                    <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                    <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}"
+                                        class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
+                                    <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                
+                                <input type="hidden" name="size" id="selected_size">
+                                <input type="hidden" name="color" id="selected_color">
+                                
+                                <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart mr-2"></i>
+                                    Add to Cart
+                                </button>
+                            </div>
+                        </form>
+                    @else
                         <div class="border-t border-b border-gray-200 py-4">
                             <div class="mb-4">
                                 <h3 class="text-sm font-medium text-gray-900 mb-2">
@@ -110,16 +213,12 @@
                                     @if(is_array($product->sizes) || is_object($product->sizes))
                                         @foreach($product->sizes as $size)
                                         <button type="button" 
-                                                class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none" 
-                                                data-size="{{ $size }}">
+                                                class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
                                             {{ $size }}
                                         </button>
                                         @endforeach
                                     @endif
                                 </div>
-                                @error('size')
-                                    <p class="mt-1 text-sm text-red-600">{{ $errors->first('size') }}</p>
-                                @enderror
                             </div>
                             
                             <div>
@@ -134,98 +233,46 @@
                                         @foreach($product->colors as $color)
                                         <button type="button" 
                                                 class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
-                                                style="background-color: {{ $color }};"
-                                                data-color="{{ $color }}">
+                                                style="background-color: {{ $color }};">
                                         </button>
                                         @endforeach
                                     @endif
                                 </div>
-                                @error('color')
-                                    <p class="mt-1 text-sm text-red-600">{{ $errors->first('color') }}</p>
-                                @enderror
                             </div>
                         </div>
                         
                         <div class="flex items-center space-x-4 mt-6">
                             <div class="flex border border-gray-300 rounded-md">
-                                <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-decrease">
+                                <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100">
                                     <i class="fas fa-minus"></i>
                                 </button>
-                                <input type="number" name="quantity" value="1" min="1" 
-                                    class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none quantity-input">
-                                <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100 quantity-increase">
+                                <input type="number" value="1" min="1" max="{{ $product->stock }}"
+                                    class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none">
+                                <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100">
                                     <i class="fas fa-plus"></i>
                                 </button>
                             </div>
                             
-                            <input type="hidden" name="size" id="selected_size">
-                            <input type="hidden" name="color" id="selected_color">
-                            
-                            <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
+                            <a href="{{ route('shoes.login') }}" 
+                               onclick="event.preventDefault(); showLoginCartNotification();" 
+                               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
                                 <i class="fas fa-shopping-cart mr-2"></i>
                                 Add to Cart
-                            </button>
+                            </a>
                         </div>
-                    </form>
+                    @endauth
                 @else
                     <div class="border-t border-b border-gray-200 py-4">
-                        <div class="mb-4">
-                            <h3 class="text-sm font-medium text-gray-900 mb-2">
-                                Size
-                                @if(is_array($product->sizes) && count($product->sizes) > 0)
-                                    <span class="text-red-500">*</span>
-                                @endif
-                            </h3>
-                            <div class="grid grid-cols-4 gap-2">
-                                @if(is_array($product->sizes) || is_object($product->sizes))
-                                    @foreach($product->sizes as $size)
-                                    <button type="button" 
-                                            class="size-button border border-gray-300 rounded-md py-2 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
-                                        {{ $size }}
-                                    </button>
-                                    @endforeach
-                                @endif
+                        <div class="flex justify-center items-center py-6 bg-gray-100 rounded-md">
+                            <div class="text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-3">
+                                    <i class="fas fa-times text-red-600"></i>
+                                </div>
+                                <h3 class="text-lg font-medium text-gray-900 mb-1">Sold Out</h3>
+                                <p class="text-gray-600">This product is currently out of stock.</p>
+                                
                             </div>
                         </div>
-                        
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900 mb-2">
-                                Color
-                                @if(is_array($product->colors) && count($product->colors) > 0)
-                                    <span class="text-red-500">*</span>
-                                @endif
-                            </h3>
-                            <div class="flex space-x-3">
-                                @if(is_array($product->colors) || is_object($product->colors))
-                                    @foreach($product->colors as $color)
-                                    <button type="button" 
-                                            class="color-button border-2 border-gray-300 rounded-full w-8 h-8 focus:outline-none" 
-                                            style="background-color: {{ $color }};">
-                                    </button>
-                                    @endforeach
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center space-x-4 mt-6">
-                        <div class="flex border border-gray-300 rounded-md">
-                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100">
-                                <i class="fas fa-minus"></i>
-                            </button>
-                            <input type="number" value="1" min="1" 
-                                class="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none">
-                            <button type="button" class="px-3 py-2 text-gray-600 hover:bg-gray-100">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                        </div>
-                        
-                        <a href="{{ route('shoes.login') }}" 
-                           onclick="event.preventDefault(); showLoginCartNotification();" 
-                           class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-md font-medium flex items-center justify-center">
-                            <i class="fas fa-shopping-cart mr-2"></i>
-                            Add to Cart
-                        </a>
                     </div>
                 @endif
                 
@@ -251,24 +298,6 @@
                     </a>
                 @endauth
                 
-                <div class="pt-4">
-                    <p class="text-green-600 flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <span>In stock - ready to ship</span>
-                    </p>
-                    
-                    <div class="mt-2 flex space-x-6 text-sm text-gray-500">
-                        <div class="flex items-center">
-                            <i class="fas fa-shipping-fast mr-2"></i>
-                            <span>Free shipping</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-sync-alt mr-2"></i>
-                            <span>30 day returns</span>
-                        </div>
-                    </div>
-                </div>
-                
                 <div>
                     <h3 class="text-lg font-medium text-gray-900 mb-2">Description</h3>
                     <div class="prose prose-blue">
@@ -284,7 +313,7 @@
             <h2 class="text-2xl font-bold mb-6">You May Also Like</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 @foreach($relatedProducts as $related)
-                <div class="bg-white rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-2">
+                <div class="bg-white rounded-xl overflow-hidden shadow-md transition-transform duration-300 hover:-translate-y-2 relative">
                     <a href="{{ route('products.show', $related->slug) }}">
                         <div class="relative h-64">
                             @php
@@ -292,6 +321,12 @@
                                 $relatedImage = !empty($relatedImages) ? $relatedImages[0] : 'https://via.placeholder.com/300';
                             @endphp
                             <img src="{{ asset('storage/' . $relatedImage) }}" alt="{{ $related->name }}" class="w-full h-full object-cover">
+                            
+                            @if($related->stock <= 0)
+                                <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                    <span class="bg-red-500 text-white px-4 py-2 rounded-full font-bold">SOLD OUT</span>
+                                </div>
+                            @endif
                         </div>
                     </a>
                     <div class="p-4">
@@ -309,6 +344,16 @@
                                 <span class="text-lg font-bold text-gray-900">Rp{{ number_format($related->price, 0, ',', '.') }}</span>
                                 @endif
                             </div>
+                            
+                            @if($related->stock > 0)
+                                <a href="{{ route('products.show', $related->slug) }}" class="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors duration-300 inline-flex items-center justify-center">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </a>
+                            @else
+                                <button class="bg-gray-300 text-white p-2 rounded-full cursor-not-allowed" disabled>
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -362,15 +407,32 @@
         const increaseButton = document.querySelector('.quantity-increase');
         const quantityInput = document.querySelector('.quantity-input');
         
-        decreaseButton.addEventListener('click', function() {
-            if (parseInt(quantityInput.value) > 1) {
-                quantityInput.value = parseInt(quantityInput.value) - 1;
-            }
-        });
-        
-        increaseButton.addEventListener('click', function() {
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-        });
+        if (decreaseButton && increaseButton && quantityInput) {
+            const maxStock = parseInt(quantityInput.getAttribute('max') || 100);
+            
+            decreaseButton.addEventListener('click', function() {
+                if (parseInt(quantityInput.value) > 1) {
+                    quantityInput.value = parseInt(quantityInput.value) - 1;
+                }
+            });
+            
+            increaseButton.addEventListener('click', function() {
+                if (parseInt(quantityInput.value) < maxStock) {
+                    quantityInput.value = parseInt(quantityInput.value) + 1;
+                } else {
+                    alert('Cannot add more than available stock (' + maxStock + ')');
+                }
+            });
+            
+            quantityInput.addEventListener('change', function() {
+                if (parseInt(this.value) < 1) {
+                    this.value = 1;
+                } else if (parseInt(this.value) > maxStock) {
+                    this.value = maxStock;
+                    alert('Cannot add more than available stock (' + maxStock + ')');
+                }
+            });
+        }
     });
 </script>
 @endsection

@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of all products.
-     */
     public function index(Request $request)
     {
         $query = DB::table('products')
@@ -25,15 +22,20 @@ class ProductController extends Controller
             )
             ->where('products.is_active', 1)
             ->whereNull('products.deleted_at');
+        
+        // Filter by stock status if requested
+        if ($request->has('in_stock') && $request->in_stock == 1) {
+            $query->where('products.stock', '>', 0);
+        }
 
         // Search functionality
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('products.name', 'like', "%{$search}%")
-                  ->orWhere('products.description', 'like', "%{$search}%")
-                  ->orWhere('categories.name', 'like', "%{$search}%")
-                  ->orWhere('brands.name', 'like', "%{$search}%");
+                ->orWhere('products.description', 'like', "%{$search}%")
+                ->orWhere('categories.name', 'like', "%{$search}%")
+                ->orWhere('brands.name', 'like', "%{$search}%");
             });
         }
 
@@ -64,12 +66,9 @@ class ProductController extends Controller
         $categories = Category::where('is_active', 1)->get();
         $brands = Brand::where('is_active', 1)->get();
 
-        return view('products.index', compact('products', 'categories', 'brands'));
+        return view('home', compact('products', 'categories', 'brands'));
     }
 
-    /**
-     * Display products by category.
-     */
     public function category($slug)
     {
         $category = Category::where('slug', $slug)->firstOrFail();
@@ -120,9 +119,6 @@ class ProductController extends Controller
         return view('products.category', compact('products', 'categories', 'brands', 'category'));
     }
 
-    /**
-     * Display products on sale.
-     */
     public function sale(Request $request)
     {
         $query = DB::table('products')
@@ -179,9 +175,6 @@ class ProductController extends Controller
         return view('products.sale', compact('products', 'categories', 'brands'));
     }
 
-    /**
-     * Display a specific product.
-     */
     public function show($slug)
     {
         $product = Product::with(['category', 'brand'])
@@ -198,9 +191,6 @@ class ProductController extends Controller
         return view('products.show', compact('product', 'relatedProducts'));
     }
     
-    /**
-     * Display products by brand.
-     */
     public function brand($slug)
     {
         $brand = Brand::where('slug', $slug)->firstOrFail();
@@ -251,9 +241,6 @@ class ProductController extends Controller
         return view('products.brand', compact('products', 'categories', 'brands', 'brand'));
     }
     
-    /**
-     * Display newest products.
-     */
     public function newest(Request $request)
     {
         $query = DB::table('products')
@@ -296,9 +283,6 @@ class ProductController extends Controller
         return view('products.newest', compact('products', 'categories', 'brands'));
     }
     
-    /**
-     * Display featured products.
-     */
     public function featured(Request $request)
     {
         $query = DB::table('products')

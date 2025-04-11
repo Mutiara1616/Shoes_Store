@@ -34,19 +34,19 @@ class CartController extends Controller
             ['session_id' => $sessionId],
             ['shoes_member_id' => Auth::guard('shoes')->id()]
         );
-    }
+        }
 
-    public function index()
-    {
+        public function index()
+        {
         $cart = $this->getOrCreateCart();
         $cart->load('items.product');
 
         return view('cart.index', compact('cart'));
-    }
+        }
 
-    public function add(Request $request)
-    {
-        // Periksa apakah user sudah login
+        public function add(Request $request)
+        {
+        // Check if user is logged in
         if (!Auth::guard('shoes')->check()) {
             return redirect()->route('shoes.login')
                 ->with('error', 'Please login to add items to your cart');
@@ -54,9 +54,18 @@ class CartController extends Controller
         
         $product = Product::findOrFail($request->product_id);
 
-        // Validasi stok
+        // Check if product is out of stock
+        if ($product->stock <= 0) {
+            return redirect()->back()->with('error', 'Sorry, this product is out of stock.');
+        }
+
+        // Validate stock
         if ($product->stock < $request->quantity) {
-            return back()->with('error', 'Stok produk tidak mencukupi');
+            // Adjust quantity to available stock
+            $request->merge(['quantity' => $product->stock]);
+            
+            // Prepare notification message
+            session()->flash('info', "Only {$product->stock} items of \"{$product->name}\" are available. Quantity has been adjusted.");
         }
 
         // Check if product has sizes and colors and validate accordingly
@@ -79,32 +88,56 @@ class CartController extends Controller
 
         $cart = $this->getOrCreateCart();
 
-        // Debug lines
-        \Log::info('Adding to cart', [
-            'cart_id' => $cart->id,
-            'product_id' => $request->product_id,
-            'quantity' => $request->quantity
-        ]);
+        // Check if the item already exists in the cart with the same options
+        $existingItem = $cart->items()
+            ->where('product_id', $request->product_id)
+            ->where('size', $request->size)
+            ->where('color', $request->color)
+            ->first();
 
-        $cartItem = $cart->items()->create([
-            'product_id' => $request->product_id,
-            'quantity' => $request->quantity,
-            'size' => $request->size,
-            'color' => $request->color,
-        ]);
+        if ($existingItem) {
+            // If item exists, update quantity
+            $newQuantity = $existingItem->quantity + $request->quantity;
+            
+            // Check if new quantity exceeds stock
+            if ($newQuantity > $product->stock) {
+                $newQuantity = $product->stock;
+                session()->flash('info', "Stock for \"{$product->name}\" is limited. Quantity has been adjusted to {$product->stock}.");
+            }
+            
+            $existingItem->update(['quantity' => $newQuantity]);
+            
+            return redirect()->route('cart.index')->with('success', 'Product quantity updated in cart');
+        } else {
+            // Create new cart item
+            $cart->items()->create([
+                'product_id' => $request->product_id,
+                'quantity' => $request->quantity,
+                'size' => $request->size,
+                'color' => $request->color,
+            ]);
 
-        // Debug line
-        \Log::info('Cart item created', [
-            'cart_item_id' => $cartItem->id,
-            'cart_id' => $cartItem->cart_id
-        ]);
+            return redirect()->route('cart.index')->with('success', 'Product added to cart successfully');
+        }
+        }
 
-        return redirect()->route('cart.index')->with('success', 'Product added to cart successfully');
-    }
-
-    public function update(Request $request, CartItem $cartItem)
-    {
+        public function update(Request $request, CartItem $cartItem)
+        {
         $product = $cartItem->product;
+        
+        // Check if product is out of stock
+        if ($product->stock <= 0) {
+            return redirect()->route('cart.index')->with('error', "Sorry, \"{$product->name}\" is now out of stock.");
+        }
+        
+        // Automatically adjust quantity if it exceeds stock
+        if ($request->quantity > $product->stock) {
+            // Set quantity to match available stock
+            $request->merge(['quantity' => $product->stock]);
+            
+            // Set flash message to notify user
+            session()->flash('info', "Quantity for \"{$product->name}\" has been adjusted to {$product->stock} due to limited stock.");
+        }
 
         $request->validate([
             'quantity' => [
@@ -114,7 +147,7 @@ class CartController extends Controller
                 "max:{$product->stock}"
             ],
         ], [
-            'quantity.max' => "Stok produk {$product->name} hanya tersisa {$product->stock}."
+            'quantity.max' => "Stock for {$product->name} is only {$product->stock} remaining."
         ]);
 
         $cartItem->update([
@@ -122,17 +155,17 @@ class CartController extends Controller
         ]);
 
         return redirect()->route('cart.index')->with('success', 'Cart updated successfully');
-    }
+        }
 
-    public function remove(CartItem $cartItem)
-    {
+        public function remove(CartItem $cartItem)
+        {
         $cartItem->delete();
 
         return redirect()->route('cart.index')->with('success', 'Item removed from cart');
-    }
+        }
 
-    public function clear()
-    {
+        public function clear()
+        {
         $cart = $this->getOrCreateCart();
         $cart->items()->delete();
 

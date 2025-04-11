@@ -13,6 +13,12 @@
             </div>
         @endif
 
+        @if(session('info'))
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6 relative" role="alert">
+                <span class="block sm:inline">{{ session('info') }}</span>
+            </div>
+        @endif
+
         @foreach($cart->items as $item)
             @if($item->product->stock < $item->quantity)
                 <div class="alert alert-warning mb-6">
@@ -106,7 +112,7 @@
                                             </button>
                                             <input type="number" name="quantity" value="{{ $item->quantity }}" min="1"
                                                 class="w-12 text-center border-x border-gray-300 py-1 focus:outline-none quantity-input no-spinners"
-                                                data-item-id="{{ $item->id }}">
+                                                data-item-id="{{ $item->id }}" max="{{ $item->product->stock }}">
                                             <button type="button" class="px-3 py-1 text-gray-600 hover:bg-gray-100 quantity-increase" data-item-id="{{ $item->id }}">
                                                 <i class="fas fa-plus"></i>
                                             </button>
@@ -174,7 +180,6 @@
 </div>
 
 <style>
-    /* Remove browser default spinners (arrows) from number inputs */
     input.no-spinners::-webkit-outer-spin-button,
     input.no-spinners::-webkit-inner-spin-button {
         -webkit-appearance: none;
@@ -189,7 +194,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Function to submit the form
         function updateCart(itemId) {
             document.getElementById('update-form-' + itemId).submit();
         }
@@ -214,7 +218,14 @@
             button.addEventListener('click', function() {
                 const itemId = this.getAttribute('data-item-id');
                 const input = document.querySelector('.quantity-input[data-item-id="' + itemId + '"]');
-                input.value = parseInt(input.value) + 1;
+                const maxStock = parseInt(input.getAttribute('max'));
+                
+                if (parseInt(input.value) < maxStock) {
+                    input.value = parseInt(input.value) + 1;
+                } else {
+                    input.value = maxStock;
+                    alert('Stok maksimum produk ini hanya ' + maxStock);
+                }
                 updateCart(itemId);
             });
         });
@@ -223,6 +234,15 @@
         quantityInputs.forEach(input => {
             input.addEventListener('change', function() {
                 const itemId = this.getAttribute('data-item-id');
+                const maxStock = parseInt(this.getAttribute('max'));
+                
+                if (parseInt(this.value) < 1) {
+                    this.value = 1;
+                } else if (parseInt(this.value) > maxStock) {
+                    this.value = maxStock;
+                    alert('Stok maksimum produk ini hanya ' + maxStock);
+                }
+                
                 if (parseInt(this.value) >= 1) {
                     updateCart(itemId);
                 }
