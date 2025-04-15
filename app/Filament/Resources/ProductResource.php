@@ -120,13 +120,6 @@ class ProductResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('images')
-                    ->label('Image')
-                    ->circular()
-                    ->getStateUsing(function (Product $record): ?string {
-                        $images = $record->images;
-                        return $images[0] ?? null;
-                    }),
                     
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()
@@ -201,14 +194,13 @@ class ProductResource extends Resource
             'index' => Pages\ListProducts::route('/'),
             'create' => Pages\CreateProduct::route('/create'),
             'edit' => Pages\EditProduct::route('/{record}/edit'),
+            'recycle-bin' => Pages\RecycleBin::route('/recycle-bin'),
         ];
     }
 
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
+            ->withoutTrashed();
     }
 }

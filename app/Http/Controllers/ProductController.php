@@ -22,8 +22,7 @@ class ProductController extends Controller
             )
             ->where('products.is_active', 1)
             ->whereNull('products.deleted_at');
-        
-        // Filter by stock status if requested
+    
         if ($request->has('in_stock') && $request->in_stock == 1) {
             $query->where('products.stock', '>', 0);
         }

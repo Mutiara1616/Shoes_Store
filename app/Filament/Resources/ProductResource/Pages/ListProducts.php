@@ -14,6 +14,11 @@ class ListProducts extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Actions\Action::make('recycle_bin')
+                ->label('Recycle Bin')
+                ->url(static::$resource::getUrl('recycle-bin'))
+                ->icon('heroicon-o-trash')
+                ->color('warning'),
         ];
     }
 }
